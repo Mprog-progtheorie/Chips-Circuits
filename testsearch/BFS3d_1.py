@@ -3,6 +3,7 @@
 # 
 # Pruning on z values
 ########################################
+import sys
 import csv
 from mpl_toolkits import mplot3d
 import numpy as np
@@ -147,7 +148,7 @@ gates = []
 fig = plt.figure()
 ax = plt.axes(projection="3d")
 
-make_grid(18, 8)
+make_grid(8, 17)
 
 
 for number, x, y in reader:
@@ -307,10 +308,43 @@ for net in netlist:
         allWires[str(tempCount)] = wire
         tempCount += 1
         wire = []
+        print(len(allWires))
+        if len(allWires) > 3:
+            for gate_coordinate in gates: 
+                set_gate(gate_coordinate)
+                plt.pause(0.03)
+            
+            colours = ['b','lightgreen','cyan','m','yellow','k', 'pink']
+            colourcounter = 0 
+            # for i in range(len(allWires)):  
 
-for gate_coordinate in gates: 
-    set_gate(gate_coordinate)
-    plt.pause(0.03)
+
+            for keys in allWires:
+                allConnections = allWires[keys]
+                allconnectionlist = []
+                for listconnection in allConnections: 
+                    allconnectionlist.append(listconnection)
+                if colourcounter < 6:
+                    colourcounter += 1
+                else: 
+                    colourcounter = 0
+                for i in range(len(allconnectionlist)):
+                    try:
+                        # print("LineFromTo", allWires[i], "To",allWires[i + 1] )
+                        draw_line(allconnectionlist[i], allconnectionlist[i+1], colours[colourcounter] )
+                        plt.pause(0.05)
+                    except: 
+                        break    
+
+            ax.set_xlabel('x')
+            ax.set_ylabel('y')
+            ax.set_zlabel('z')
+
+            plt.show()
+            sys.exit()
+
+
+
 
 
 colours = ['b','lightgreen','cyan','m','yellow','k', 'pink']
