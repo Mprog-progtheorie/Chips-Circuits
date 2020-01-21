@@ -6,15 +6,14 @@
 # Pseudocode source: http://mat.uab.cat/~alseda/MasterOpt/AStar-Algorithm.pdf
 ##################################################
 class Grid():
-    def __init__(self, grid_size):
-        self.grid_size = grid_size
+    def __init__(self):
         self.grid = []
         self.g = 0
 
     def make_grid(self):
-        for x in range(self.grid_size):
-            for y in range(self.grid_size):
-                for z in range(self.grid_size):
+        for x in range(-1, 17):
+            for y in range(-1, 12):
+                for z in range(8):
                     self.grid.append(Node(x, y, z))
     
     def get_grid(self):
@@ -76,7 +75,6 @@ class Node():
 
 def search(open_list, closed_list, grid, goal, node_previous):
     while open_list:
-        # Alle opties met de minimum f waarde pakken?
         f_list = []
         for i in open_list:
             f_list.append(i.f_score())
@@ -95,7 +93,6 @@ def search(open_list, closed_list, grid, goal, node_previous):
         if node_previous and successors:
             successors.pop(0)
         
-        # print(q, " successors: ", successors)
         node_previous.clear()
         node_previous.append(q)
             
@@ -104,14 +101,8 @@ def search(open_list, closed_list, grid, goal, node_previous):
 
             # Set successor_current_cost = g(node_current) + w(node_current, node_successor)
             successor_current_cost = q.get_g() + 1
-            # print("i: ", i)
-            # print("open lisT", open_list, "closed:", closed_list)
             if i in open_list:
-                # print("getggg: ", i.get_g())
-                # print("current cost succ: ", successor_current_cost)
                 if i.get_g() <= successor_current_cost:
-                    # print("true")
-                    # open_list.remove(i)
                     break
 
             elif i in closed_list:
@@ -131,36 +122,38 @@ def search(open_list, closed_list, grid, goal, node_previous):
         closed_list.append(q)
     return q
 
+def generate_path(crd):
+    path = [crd]
 
+    while crd.get_parent() != None:
+        crd = crd.get_parent()
+        path.append(crd)
 
-def init():
-    grid = Grid(10)
+    return path
+
+def initialize_grid():
+    grid = Grid()
     grid.make_grid()
-    grid = grid.get_grid()
+    return grid.get_grid()
 
-    start = Node(0, 0, 0)
-    goal = Node(9, 9, 9)
+def a_star(start, goal):
+    # Initialize the grid for program to run on
+    grid = initialize_grid()
+    
+    # Set start and goal
+    start = Node(start[0], start[1], start[2])
+    goal = Node(goal[0], goal[1], goal[2])
+
+    # Calculate h for start node
     start.h_score(start, goal)
 
+    # Create lists to keep track of open nodes, closed nodes, and previous nodes for optimal path
     open_list = [start]
     closed_list = []
-
-
     node_previous = []
 
-    return search(open_list, closed_list, grid, goal, node_previous)
+    q =  search(open_list, closed_list, grid, goal, node_previous)
+    
+    return generate_path(q)
 
-
-def a_star():
-    q = init()
-
-
-    end = q
-    path = [end]
-
-    while end.get_parent() != None:
-        end = end.get_parent()
-        path.append(end)
-    print(path)
-
-a_star()
+# print(a_star())
