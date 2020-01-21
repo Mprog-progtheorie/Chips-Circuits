@@ -45,7 +45,7 @@ if __name__ == '__main__':
         a_star_route = Astar.a_star(start, goal, wire_nodes)
         for i in a_star_route:
             wire_nodes.append(i)
-        print(a_star_route)
+        # print(a_star_route)
        
         
         # # Als coordinaten van groot naar klein gaat begint de lijn volgens astar random op het laatste coordinaat maar dan op 7 hoog

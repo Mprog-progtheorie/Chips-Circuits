@@ -53,7 +53,11 @@ class Node():
 
     def successors(self, grid, node_current, blocked, start):
         self.node_successors = []
-
+        
+        for i in blocked:
+            if i in grid:
+                grid.remove(i)
+        print(len(grid))
         for i in grid:
             for j in grid:
                 if i.x == node_current.x and i.y == node_current.y and i.z == node_current.z:
