@@ -74,7 +74,7 @@ class Node():
 
 
 def search(open_list, closed_list, grid, start, goal):
-    node_previous = None
+    
 
     while open_list:
         f_list = []
@@ -90,7 +90,6 @@ def search(open_list, closed_list, grid, start, goal):
             break
 
         successors = q.successors(grid, q, closed_list, start)
-    
         
         node_previous = q
             
@@ -134,13 +133,14 @@ def initialize_grid():
     grid.make_grid()
     return grid.get_grid()
 
-def a_star(start, goal):
+def a_star(start, goal, wire_nodes):
     # Initialize the grid for program to run on
     grid = initialize_grid()
 
     # Set start and goal
     start = Node(start[0], start[1], start[2])
     goal = Node(goal[0], goal[1], goal[2])
+    print(start, goal)
 
 
     # Calculate h for start node
@@ -151,6 +151,8 @@ def a_star(start, goal):
     # Create lists to keep track of open nodes, closed nodes, and previous nodes for optimal path
     open_list = [start]
     closed_list = []
+    for i in wire_nodes:
+        closed_list.append(i)
 
     q =  search(open_list, closed_list, grid, start, goal)
     
