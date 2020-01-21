@@ -90,12 +90,7 @@ def search(open_list, closed_list, grid, start, goal):
             break
 
         successors = q.successors(grid, q, closed_list, start)
-        
-        print(node_previous)
-        # if node_previous in successors:
-        #     print("!!@")
-        #     successors.pop(0)
-        print("Q: ", q, "successors: ", successors)
+    
         
         node_previous = q
             
@@ -150,6 +145,8 @@ def a_star(start, goal):
 
     # Calculate h for start node
     start.h_score(start, goal)
+
+    print(start.h)
 
     # Create lists to keep track of open nodes, closed nodes, and previous nodes for optimal path
     open_list = [start]
