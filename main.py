@@ -26,6 +26,7 @@ if __name__ == '__main__':
         goal = gate_coordinates[int(net.gate_2) - 1]
         a_star_route = Astar.a_star(start, goal)
         print(a_star_route)
+        break
         
 
 
