@@ -3,7 +3,7 @@ path.py
 
 Tom Kamstra, Izhar Hamer, Julia Linde
 
-Finds the optimal paths between the chips
+Finds the optimal paths between the chips based on distance in y direction.
 """
 from mpl_toolkits import mplot3d
 import numpy as np
@@ -16,7 +16,7 @@ import copy
 import csv
 
 # Create netlist by loading file in class
-netlist = classs.Netlist("data/netlist_2.csv").netlist
+netlist = classs.Netlist("data/netlist_1.csv").netlist
 
 # Create list for gate coordinates
 gate_coordinates = classs.Gate_coordinate("data/pritn_1.csv").gate_coordinates
@@ -36,17 +36,14 @@ for item in netlist:
     coordinate_start = gate_coordinates[gate_start - 1]
     coordinate_end = gate_coordinates[gate_end - 1]
     
-    # Define x and y coordinates for start and end gate
-    x_coordinate_start = int(coordinate_start[0])
+    # Define y coordinates for start and end gate
     y_coordinate_start = int(coordinate_start[1])
-
-    x_coordinate_end = int(coordinate_end[0])
     y_coordinate_end = int(coordinate_end[1])
 
     # Calculate total shortest distance between gates
-    total_dist = abs(x_coordinate_start - x_coordinate_end) + abs(y_coordinate_start - y_coordinate_end)
+    y_dist = abs(y_coordinate_start - y_coordinate_end)
 
-    distances.update({connected_gate: total_dist})
+    distances.update({connected_gate: y_dist})
 
 # Sort connections from smallest to largest distance in dictionary
 distances = list(distances.items())
@@ -129,9 +126,9 @@ for chips in distances:
     # Create switch variable to switch start moving direction
     if count > len(netlist)+5:
         # Reconnect deleted wires in switched direction
-        switch_variable = 1
-    else:
         switch_variable = 0
+    else:
+        switch_variable = 1
     
     # Overwrite coordinate but save coordinate_begin in different variable        
     coordinate = coordinate_begin
@@ -164,6 +161,10 @@ for chips in distances:
                 coordinate = [x_coordinate_start, y_coordinate_start, z_coordinate_start]
                 # Check for other gates or other wires
                 if gate_connections:
+                    try:
+                        step_y = step_y
+                    except:
+                        step_y = 0
                     (x_coordinate_start, z_coordinate_start) = change.change_coor(gate_connections, coordinate, gate_coordinates, wires, coordinate_end, x_coordinate_start, -step_x, z_coordinate_start, 1)
                     coordinate = [x_coordinate_start, y_coordinate_start, z_coordinate_start]
                     (z_coordinate_start, y_coordinate_start) = change.change_coor(gate_connections, coordinate, gate_coordinates, wires, coordinate_end, z_coordinate_start, -1, y_coordinate_start, step_y)
@@ -305,6 +306,10 @@ for chips in distances:
                    
         # Check whether wire isn't running into forever loop
         if len(wires) > 100:
+            try:
+                step_y = step_y
+            except:
+                step_y = 0
             x_coordinate_check = x_coordinate_end + step_x
             check_coordinate = [x_coordinate_check, y_coordinate_end, z_coordinate_end]
             for item in allwires:
@@ -491,9 +496,9 @@ for keys in gate_connections:
         colourcounter = 0
     for i in range(len(allconnectionlist)):
         try:
-            print("LineFromTo", allconnectionlist[i], "To", allconnectionlist[i + 1])
+            print("LineFromTo", allconnectionlist[i], "To",allconnectionlist[i + 1] )
             draw_line(allconnectionlist[i], allconnectionlist[i+1], colours[colourcounter] )
-            # plt.pause(0.000001)
+            plt.pause(0.000001)
         except: 
             break
             
