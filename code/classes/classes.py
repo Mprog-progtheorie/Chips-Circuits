@@ -9,7 +9,8 @@ class Wire():
         return self.coordinate
         
     def __repr__(self):
-        return f"{self.coordinate}, {self.net}"
+        # return f"{self.coordinate}, {self.net}"
+        return str(self.coordinate, self.net)
 
 class Gate_coordinate():
     def __init__(self, gate_file):
@@ -43,7 +44,8 @@ class Net():
         return self.wires
         
     def __repr__(self):
-        return f"{self.gate_1}, {self.gate_2}, {self.wires}"
+        # return f"{self.gate_1}, {self.gate_2}, {self.wires}"
+        return str(self.gate_1) + ", " + str(self.gate_2) + ", " + str(self.wires)
         
 class Netlist():
     def __init__(self, net_file):
