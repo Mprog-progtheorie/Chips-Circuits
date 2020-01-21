@@ -21,12 +21,14 @@ if __name__ == '__main__':
         alle gate_coordinaten
         geef een lijst mee met coordinaten waar al draad ligt
     """ 
+    wire_nodes = []
     for net in netlist: 
         start = gate_coordinates[int(net.gate_1) - 1]
         goal = gate_coordinates[int(net.gate_2) - 1]
-        a_star_route = Astar.a_star(start, goal)
+        a_star_route = Astar.a_star(start, goal, wire_nodes)
+        for i in a_star_route:
+            wire_nodes.append(i)
         print(a_star_route)
-        break
         
 
 
