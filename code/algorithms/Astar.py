@@ -58,14 +58,20 @@ class Node():
             for j in grid:
                 if i.x == node_current.x and i.y == node_current.y and i.z == node_current.z:
                     if abs(j.x - i.x) == 1 and j.y - i.y == 0 and j.z - i.z == 0:   
-                        if j not in blocked and str(j) != str(start): 
-                            self.node_successors.append(j)
+                        if str(j) != str(start): 
+                            for k in blocked:
+                                if str(j) != str(k):
+                                    self.node_successors.append(j)
                     elif abs(j.y - i.y) == 1 and j.x - i.x == 0 and j.z - i.z == 0:
-                        if j not in blocked and str(j) != str(start):
-                            self.node_successors.append(j)
+                        if str(j) != str(start): 
+                            for k in blocked:
+                                if str(j) != str(k):
+                                    self.node_successors.append(j)
                     elif abs(j.z - i.z) == 1 and j.x - i.x == 0 and j.y - i.y == 0:
-                        if j not in blocked and str(j) != str(start):
-                            self.node_successors.append(j)
+                        if str(j) != str(start): 
+                            for k in blocked:
+                                if str(j) != str(k):
+                                    self.node_successors.append(j)
                     
         return self.node_successors
 
@@ -141,7 +147,6 @@ def a_star(start, goal, wire_nodes):
     start = Node(start[0], start[1], start[2])
     goal = Node(goal[0], goal[1], goal[2])
     print(start, goal)
-
 
     # Calculate h for start node
     start.h_score(start, goal)
