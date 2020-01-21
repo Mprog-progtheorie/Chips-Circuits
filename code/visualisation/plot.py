@@ -24,9 +24,10 @@ def make_grid(layers, size):
     ax.set_xlim3d(0, size)
     ax.set_ylim3d(0, size)
 
+    return ax
+
 # Enter coordinates as list with: [X, Y, Z]
-def draw_line(crdFrom, crdTo, colour):  
-    ax = plt.axes(projection="3d")
+def draw_line(crdFrom, crdTo, colour, ax):  
     Xline = [crdFrom[0], crdTo[0]]
     Yline = [crdFrom[1], crdTo[1]]
     Zline = [crdFrom[2], crdTo[2]]
@@ -34,8 +35,7 @@ def draw_line(crdFrom, crdTo, colour):
     print("LineFromTo",crdFrom , "To",crdTo, colour)
     ax.plot(Xline, Yline, Zline,lw=2,  color=colour, ms=12)
 
-def set_gate(crd):
-    ax = plt.axes(projection="3d")
+def set_gate(crd, ax):
     PointX = [crd[0]]
     PointY = [crd[1]]
     PointZ = [crd[2]]

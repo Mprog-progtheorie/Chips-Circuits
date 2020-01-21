@@ -146,6 +146,8 @@ def a_star(start, goal, wire_nodes):
     # Calculate h for start node
     start.h_score(start, goal)
 
+    print(start.h)
+
     # Create lists to keep track of open nodes, closed nodes, and previous nodes for optimal path
     open_list = [start]
     closed_list = []
