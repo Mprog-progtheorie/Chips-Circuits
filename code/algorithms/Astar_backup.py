@@ -78,8 +78,8 @@ grid = Grid(10)
 grid.make_grid()
 grid = grid.get_grid()
 
-start = Node(0, 0, 0)
-goal = Node(9, 9, 9)
+start = Node(5, 0, 0)
+goal = Node(1, 0, 0)
 start.h_score(start, goal)
 
 open_list = [start]
@@ -108,6 +108,7 @@ while open_list:
         break
 
     successors = q.successors(grid, q, closed_list)
+    
 
     
     if node_previous and successors:
