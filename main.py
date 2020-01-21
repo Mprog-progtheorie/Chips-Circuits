@@ -4,12 +4,13 @@ from code.functions import delete as delete
 from code.algorithms import Astar as Astar
 import copy
 import matplotlib.pyplot as plt
-
+import time
 import csv
 
 
 
 if __name__ == '__main__':
+    start_time = time.time()
     count = 0 
     # Create netlist by loading file in class
     netlist = classs.Netlist("data/netlist_1.csv").netlist
@@ -61,6 +62,8 @@ if __name__ == '__main__':
         # a_star_route = Astar.a_star([15, 11, 0], [14, 11, 0])
         # print(a_star_route)p
 
+    end_time = time.time()
+    print("TIME: ", end_time - start_time)
     allConnections = []
     colours = ['b','lightgreen','cyan','m','yellow','k', 'pink']
     colourcounter = 0
