@@ -144,8 +144,12 @@ def a_star(start, goal):
     start = Node(start[0], start[1], start[2])
     goal = Node(goal[0], goal[1], goal[2])
 
+
+    print("Start: ", start, "Goal: ", goal)    
     # Calculate h for start node
     start.h_score(start, goal)
+
+    print(start.h)
 
     # Create lists to keep track of open nodes, closed nodes, and previous nodes for optimal path
     open_list = [start]
