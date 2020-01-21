@@ -16,7 +16,7 @@ import copy
 import csv
 
 # Create netlist by loading file in class
-netlist = classs.Netlist("data/netlist_2.csv").netlist
+netlist = classs.Netlist("data/netlist_1.csv").netlist
 
 # Create list for gate coordinates
 gate_coordinates = classs.Gate_coordinate("data/pritn_1.csv").gate_coordinates
@@ -36,17 +36,14 @@ for item in netlist:
     coordinate_start = gate_coordinates[gate_start - 1]
     coordinate_end = gate_coordinates[gate_end - 1]
     
-    # Define x and y coordinates for start and end gate
+    # Define x coordinates for start and end gate
     x_coordinate_start = int(coordinate_start[0])
-    y_coordinate_start = int(coordinate_start[1])
-
     x_coordinate_end = int(coordinate_end[0])
-    y_coordinate_end = int(coordinate_end[1])
 
     # Calculate total shortest distance between gates
-    total_dist = abs(x_coordinate_start - x_coordinate_end) + abs(y_coordinate_start - y_coordinate_end)
+    x_dist = abs(x_coordinate_start - x_coordinate_end)
 
-    distances.update({connected_gate: total_dist})
+    distances.update({connected_gate: x_dist})
 
 # Sort connections from smallest to largest distance in dictionary
 distances = list(distances.items())
@@ -491,9 +488,9 @@ for keys in gate_connections:
         colourcounter = 0
     for i in range(len(allconnectionlist)):
         try:
-            print("LineFromTo", allconnectionlist[i], "To", allconnectionlist[i + 1])
+            print("LineFromTo", allconnectionlist[i], "To",allconnectionlist[i + 1] )
             draw_line(allconnectionlist[i], allconnectionlist[i+1], colours[colourcounter] )
-            # plt.pause(0.000001)
+            plt.pause(0.000001)
         except: 
             break
             

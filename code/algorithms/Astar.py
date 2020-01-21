@@ -1,166 +1,166 @@
-###########################################################################
-# A* search algorithm
+##################################################
+# Astar_2.py
 # 
-# By team De Mandarijntjes
+# By team De Madarijntjes
 # 
-# Pseudocode from http://mat.uab.cat/~alseda/MasterOpt/AStar-Algorithm.pdf
-#             and https://en.wikipedia.org/wiki/A*_search_algorithm
-###########################################################################
+# Pseudocode source: http://mat.uab.cat/~alseda/MasterOpt/AStar-Algorithm.pdf
+##################################################
+class Grid():
+    def __init__(self, grid_size):
+        self.grid_size = grid_size
+        self.grid = []
+        self.g = 0
 
-# function reconstruct_path(cameFrom, current)
-#     total_path := {current}
-#     while current in cameFrom.Keys:
-#         total_path.prepend(current)
-#         current := cameFrom[current]
-#     return total_path
-
-
-def heuristic(currentCell, goal):
-    return abs(currentCell.x - goal.x) + abs(currentCell.y - goal.y)
+    def make_grid(self):
+        for x in range(self.grid_size):
+            for y in range(self.grid_size):
+                for z in range(self.grid_size):
+                    self.grid.append(Node(x, y, z))
+    
+    def get_grid(self):
+        return self.grid
+        
 
 class Node():
-    def __init__(self, x, y):
+    def __init__(self, x, y, z):
         self.x = x
         self.y = y
-    
+        self.z = z
+        self.g = 0
+        self.parent = None
+
     def f_score(self):
-        h = self.h_score()
-        return self.g + h
+        return self.g + self.h
     
-    def g_score(self, value):
-        self.g = value
+    def get_g(self):
         return self.g
     
-    def h_score(self):
-        self.h = heuristic(Node(self.x, self.y), Goal(1, 1))
+    def set_g(self, value):
+        self.g = value
+    
+    def g_score(self, value):
+        self.g += value
+    
+    def h_score(self, current, goal):
+        self.h = abs(current.x - goal.x) + abs(current.y - goal.y) + abs(current.z - goal.z)
         
         return self.h
     
-    def successors(self, grid, node_current, successor_list):
-        node_successors = []
-        # print("!!!!! successor_list", successor_list)
-        for i in successor_list:
-            print("plop", i)
-            for j in i:
-                print("***", j.x, j.y)
-            print()
+    def set_parent(self, node):
+        self.parent = node
+    
+    def get_parent(self):
+        return self.parent
+
+    def successors(self, grid, node_current, blocked):
+        self.node_successors = []
+
         for i in grid:
             for j in grid:
-                # Kan mooier?
-                if i.x == node_current.x and i.y == node_current.y:
-                    if abs(j.x - i.x) == 1 and j.y - i.y == 0:    
-                        if [j,i] not in successor_list:
-                            print("-_-", [j.x, j.y, i.x, i.y])
-                            node_successors.append((j))
-                    elif abs(j.y - i.y) == 1 and j.x - i.x == 0:
-                        if [j,i] not in successor_list:
-                            print("---", [j.x, j.y, i.x, i.y])
-                            node_successors.append((j))
-        return node_successors
-    
+                if i.x == node_current.x and i.y == node_current.y and i.z == node_current.z:
+                    if abs(j.x - i.x) == 1 and j.y - i.y == 0 and j.z - i.z == 0:   
+                        if j not in blocked: 
+                            self.node_successors.append(j)
+                    elif abs(j.y - i.y) == 1 and j.x - i.x == 0 and j.z - i.z == 0:
+                        if j not in blocked:
+                            self.node_successors.append(j)
+                    elif abs(j.z - i.z) == 1 and j.x - i.x == 0 and j.y - i.y == 0:
+                        if j not in blocked:
+                            self.node_successors.append(j)
+                    
+        return self.node_successors
 
-class Goal():
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
+    def __repr__(self):
+        return str([self.x, self.y, self.z])
 
-# class Gscore():
-#     def __init__(self, node):
+
+def search(open_list, closed_list, grid, goal, node_previous):
+    while open_list:
+        # Alle opties met de minimum f waarde pakken?
+        f_list = []
+        for i in open_list:
+            f_list.append(i.f_score())
+        minimum = min(f_list)
+        for i in range(len(f_list)):
+            if f_list[i] == minimum:
+                q = open_list[i]
         
+        if str(q) == str(goal):
+            print("finished")
+            break
 
+        successors = q.successors(grid, q, closed_list)
 
-
-grid = []
-
-grid_size = 2
-for x in range(grid_size):
-    for y in range(grid_size):
-        grid.append(Node(x, y))
-
-
-open_list = []
-closed_list = []
-
-node_start = Node(0, 0)
-node_goal = Node(1, 1)
-
-open_list.append(node_start)
-
-node_start.g_score(0)
-
-# weight of move, could be used to indicated another wire or gate with extremely high value
-w = 1
-
-# temp counter to stop list
-temp_count = 0
-
-successor_list = []
-
-while open_list:
-    # print()
-    for i in open_list:
-        print("open list", i.x, i.y)
-    print()
-
-    # Take the node with the lowest f TODO
-    # Get node with minimum f score, could be done better with min()
-    f_list = []
-    for i in open_list:
-        f_list.append(i.f_score())
-    minimum = min(f_list)
-    for i in range(len(f_list)):
-        if f_list[i] == minimum:
-            node_current = open_list[i]
-    print("  node current:     ", node_current.x, node_current.y)
-
-    if node_current == node_goal:
-        print("Found solution")
-        break
-    # print("node_current successors", node_current.successors(grid, node_current))
-    # for i in node_current.successors(grid, node_current):
-    #     print("!!!!", i.x, i.y)
-    for i in node_current.successors(grid, node_current, successor_list):
-        print("iiii", i.x, i.y)
-        successor_list.append([node_current, i])
-        successor_current_cost = node_current.g + w
         
-        if i in open_list:
-            print(":::1:::")
-            if i.g <= successor_current_cost:
-                print(":::2:::")
-                break
-        elif i in closed_list:
-            print(":::3:::")
-            if i.g <= successor_current_cost:
-                print(":::4:::")
-                break
-            # in the above if statement?
-            closed_list.remove(i)
-            open_list.append(i)
-        else:
-            print(":::5:::")
-            open_list.append(i)
-            i.h_score()
-            print("len openlist", len(open_list))
-        i.g_score(successor_current_cost)
-        node_current = i
-    # ???
-    print(node_current.x, node_current.y, "current")
-    # open_list.remove(node_current)
-    closed_list.append(node_current)
+        if node_previous and successors:
+            successors.pop(0)
+        
+        # print(q, " successors: ", successors)
+        node_previous.clear()
+        node_previous.append(q)
+            
 
-    temp_count += 1
-    if temp_count == 4:
-        break
+        for i in successors:
 
-if node_current != node_goal:
-    print("error, open_list is empty!")
-else:
-    print("success?")
-    
+            # Set successor_current_cost = g(node_current) + w(node_current, node_successor)
+            successor_current_cost = q.get_g() + 1
+            # print("i: ", i)
+            # print("open lisT", open_list, "closed:", closed_list)
+            if i in open_list:
+                # print("getggg: ", i.get_g())
+                # print("current cost succ: ", successor_current_cost)
+                if i.get_g() <= successor_current_cost:
+                    # print("true")
+                    # open_list.remove(i)
+                    break
 
-    
+            elif i in closed_list:
+                if i.get_g() <= successor_current_cost:
+                    break
+                closed_list.remove(i)
+                open_list.append(i)
+            
+            else:
+                open_list.append(i)
+                i.h_score(i, goal)
+            
+            i.set_g(successor_current_cost)
+            i.set_parent(q)
+        
+        open_list.remove(q)
+        closed_list.append(q)
+    return q
 
 
 
+def init():
+    grid = Grid(10)
+    grid.make_grid()
+    grid = grid.get_grid()
 
+    start = Node(0, 0, 0)
+    goal = Node(9, 9, 9)
+    start.h_score(start, goal)
+
+    open_list = [start]
+    closed_list = []
+
+
+    node_previous = []
+
+    return search(open_list, closed_list, grid, goal, node_previous)
+
+
+def a_star():
+    q = init()
+
+
+    end = q
+    path = [end]
+
+    while end.get_parent() != None:
+        end = end.get_parent()
+        path.append(end)
+    print(path)
+
+a_star()

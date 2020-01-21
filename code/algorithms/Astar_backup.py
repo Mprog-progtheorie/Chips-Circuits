@@ -154,8 +154,4 @@ path = [end]
 while end.get_parent() != None:
     end = end.get_parent()
     path.append(end)
-
-# for q.get_parent()
-# print(q.get_parent().get_parent())
-
 print(path)

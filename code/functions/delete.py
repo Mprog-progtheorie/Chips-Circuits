@@ -9,8 +9,7 @@ def delete_wire(wires, coordinate_begin, itemnet, distances, gate_connections, a
     end_gate = itemnet[0]
     start_gate = itemnet[1]
     distances.append(((start_gate, end_gate), 2))
-    print("hallo")
-    print(distances)
+
     # Delete wire from gate connections dictionary
     del gate_connections[itemnet]
     deletelist = []
