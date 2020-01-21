@@ -52,6 +52,7 @@ class Node():
         return self.parent
 
     def successors(self, grid, node_current, blocked, start):
+        # print("blocked", blocked)
         self.node_successors = []
 
         for i in grid:
@@ -88,7 +89,7 @@ def search(open_list, closed_list, grid, start, goal):
         if str(q) == str(goal):
             print("finished")
             break
-
+        
         successors = q.successors(grid, q, closed_list, start)
         
         node_previous = q
@@ -151,6 +152,7 @@ def a_star(start, goal, wire_nodes):
     closed_list = []
     for i in wire_nodes:
         closed_list.append(i)
+    print("len", len(closed_list))
 
     q =  search(open_list, closed_list, grid, start, goal)
     
