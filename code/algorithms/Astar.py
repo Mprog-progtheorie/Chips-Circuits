@@ -51,20 +51,20 @@ class Node():
     def get_parent(self):
         return self.parent
 
-    def successors(self, grid, node_current, blocked):
+    def successors(self, grid, node_current, blocked, start):
         self.node_successors = []
 
         for i in grid:
             for j in grid:
                 if i.x == node_current.x and i.y == node_current.y and i.z == node_current.z:
                     if abs(j.x - i.x) == 1 and j.y - i.y == 0 and j.z - i.z == 0:   
-                        if j not in blocked: 
+                        if j not in blocked and str(j) != str(start): 
                             self.node_successors.append(j)
                     elif abs(j.y - i.y) == 1 and j.x - i.x == 0 and j.z - i.z == 0:
-                        if j not in blocked:
+                        if j not in blocked and str(j) != str(start):
                             self.node_successors.append(j)
                     elif abs(j.z - i.z) == 1 and j.x - i.x == 0 and j.y - i.y == 0:
-                        if j not in blocked:
+                        if j not in blocked and str(j) != str(start):
                             self.node_successors.append(j)
                     
         return self.node_successors
@@ -73,7 +73,9 @@ class Node():
         return str([self.x, self.y, self.z])
 
 
-def search(open_list, closed_list, grid, goal, node_previous):
+def search(open_list, closed_list, grid, start, goal):
+    node_previous = None
+
     while open_list:
         f_list = []
         for i in open_list:
@@ -87,14 +89,10 @@ def search(open_list, closed_list, grid, goal, node_previous):
             print("finished")
             break
 
-        successors = q.successors(grid, q, closed_list)
-
+        successors = q.successors(grid, q, closed_list, start)
+    
         
-        if node_previous and successors:
-            successors.pop(0)
-        
-        node_previous.clear()
-        node_previous.append(q)
+        node_previous = q
             
 
         for i in successors:
@@ -139,13 +137,12 @@ def initialize_grid():
 def a_star(start, goal):
     # Initialize the grid for program to run on
     grid = initialize_grid()
-    
+
     # Set start and goal
     start = Node(start[0], start[1], start[2])
     goal = Node(goal[0], goal[1], goal[2])
 
 
-    print("Start: ", start, "Goal: ", goal)    
     # Calculate h for start node
     start.h_score(start, goal)
 
@@ -154,9 +151,8 @@ def a_star(start, goal):
     # Create lists to keep track of open nodes, closed nodes, and previous nodes for optimal path
     open_list = [start]
     closed_list = []
-    node_previous = []
 
-    q =  search(open_list, closed_list, grid, goal, node_previous)
+    q =  search(open_list, closed_list, grid, start, goal)
     
     return generate_path(q)
 

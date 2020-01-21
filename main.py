@@ -40,32 +40,24 @@ if __name__ == '__main__':
         count += 1
         start = gate_coordinates[int(net.gate_1) - 1]
         goal = gate_coordinates[int(net.gate_2) - 1]
-
-        startgoal = (str(start), str(goal))
+        a_star_route = Astar.a_star(start, goal)
         
-        # Als coordinaten van groot naar klein gaat begint de lijn volgens astar random op het laatste coordinaat maar dan op 7 hoog
-        if gate_coordinates[int(net.gate_1) -1][0]  <= gate_coordinates[int(net.gate_2) -1][0] :
-            a_star_route = Astar.a_star(gate_coordinates[int(net.gate_1) -1], gate_coordinates[int(net.gate_2) -1])
-        else: 
-            a_star_route = Astar.a_star(gate_coordinates[int(net.gate_2) -1], gate_coordinates[int(net.gate_1) -1])
+        print(start, goal)
+       
+        
+        # # Als coordinaten van groot naar klein gaat begint de lijn volgens astar random op het laatste coordinaat maar dan op 7 hoog
+        # if gate_coordinates[int(net.gate_1) -1][0]  <= gate_coordinates[int(net.gate_2) -1][0] :
+        #     a_star_route = Astar.a_star(gate_coordinates[int(net.gate_1) -1], gate_coordinates[int(net.gate_2) -1])
+        # else: 
+        #     a_star_route = Astar.a_star(gate_coordinates[int(net.gate_2) -1], gate_coordinates[int(net.gate_1) -1])
 
-        gate_connections.update({startgoal: a_star_route})
+        gate_connections.update({net: a_star_route})
         print(a_star_route)
         # for i, coo in enumerate(a_star_route): 
         #     plot.draw_line(coo[i], coo[i+1], "red", ax)
         print()
         # a_star_route = Astar.a_star([15, 11, 0], [14, 11, 0])
-        # print(a_star_route)
-   
-    
-    
-    
-    
-    
-    
-
-
-    
+        # print(a_star_route)p
 
     allConnections = []
     colours = ['b','lightgreen','cyan','m','yellow','k', 'pink']
@@ -82,14 +74,13 @@ if __name__ == '__main__':
         else: 
             colourcounter = 0
 
-        print(allconnectionlist)
+        print("LENGTE: ",len(allconnectionlist))
         for i in range(len(allconnectionlist)):
-            try:
-                print("LineFromTo", allconnectionlist[i], "To",allconnectionlist[i + 1],  colours[colourcounter])
-                plot.draw_line(allconnectionlist[i], allconnectionlist[i+1], colours[colourcounter], ax)
-                # plt.pause(0.000001)
+            try: 
+                print("LineFromTo", [allconnectionlist[i].x, allconnectionlist[i].y, allconnectionlist[i + 1].z], "To",[allconnectionlist[i + 1].x, allconnectionlist[i + 1].y, allconnectionlist[i + 1].z],  colours[colourcounter])
+                plot.draw_line([allconnectionlist[i].x, allconnectionlist[i].y, allconnectionlist[i + 1].z], [allconnectionlist[i + 1].x, allconnectionlist[i + 1].y, allconnectionlist[i + 1].z], colours[colourcounter], ax)
             except: 
-                break
+                break 
     
     plt.show()
 # with open('output_astar.csv', mode= 'w') as outputfile:
