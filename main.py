@@ -36,14 +36,16 @@ if __name__ == '__main__':
     
     for gate_coordinate in gate_coordinates: 
         plot.set_gate(gate_coordinate, ax)
-
-    for net in netlist:  
+        
+    wire_nodes = []
+    for net in netlist: 
         count += 1
         start = gate_coordinates[int(net.gate_1) - 1]
         goal = gate_coordinates[int(net.gate_2) - 1]
-        a_star_route = Astar.a_star(start, goal)
-        
-        print(start, goal)
+        a_star_route = Astar.a_star(start, goal, wire_nodes)
+        for i in a_star_route:
+            wire_nodes.append(i)
+        print(a_star_route)
        
         
         # # Als coordinaten van groot naar klein gaat begint de lijn volgens astar random op het laatste coordinaat maar dan op 7 hoog
