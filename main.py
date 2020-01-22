@@ -33,18 +33,25 @@ if __name__ == '__main__':
         geef een lijst mee met coordinaten waar al draad ligt
     """ 
     ax = plot.make_grid(8, 16)
-    
+    # string_gates = [] 
+    blocked = []
+
+
     for gate_coordinate in gate_coordinates: 
+        # blocked.append(Astar.Node(gate_coordinate[0], gate_coordinate[1], gate_coordinate[2]).set_blocked())
+        blocked.append(str(gate_coordinate))
         plot.set_gate(gate_coordinate, ax)
-        
-    wire_nodes = []
+            
+    
     for net in netlist: 
         count += 1
         start = gate_coordinates[int(net.gate_1) - 1]
         goal = gate_coordinates[int(net.gate_2) - 1]
-        a_star_route = Astar.a_star(start, goal, wire_nodes)
+        a_star_route = Astar.a_star(start, goal, blocked)
+
+
         for i in a_star_route:
-            wire_nodes.append(i)
+            blocked.append(str(i))
         # print(a_star_route)
        
         
@@ -53,9 +60,10 @@ if __name__ == '__main__':
         #     a_star_route = Astar.a_star(gate_coordinates[int(net.gate_1) -1], gate_coordinates[int(net.gate_2) -1])
         # else: 
         #     a_star_route = Astar.a_star(gate_coordinates[int(net.gate_2) -1], gate_coordinates[int(net.gate_1) -1])
-
+        a_star_route.reverse()
+        print("NET: ", a_star_route)
         gate_connections.update({net: a_star_route})
-        print(a_star_route)
+        
         # for i, coo in enumerate(a_star_route): 
         #     plot.draw_line(coo[i], coo[i+1], "red", ax)
         print()
@@ -73,17 +81,17 @@ if __name__ == '__main__':
         allconnectionlist = []
         for listconnection in allConnections: 
             allconnectionlist.append(listconnection)
-            print("Test: ", listconnection)
+            # print("Test: ", listconnection)
         if colourcounter < 6:
             colourcounter += 1
         else: 
             colourcounter = 0
 
-        print("LENGTE: ",len(allconnectionlist))
+        # print("LENGTE: ",len(allconnectionlist))
         for i in range(len(allconnectionlist)):
             try: 
-                print("LineFromTo", [allconnectionlist[i].x, allconnectionlist[i].y, allconnectionlist[i + 1].z], "To",[allconnectionlist[i + 1].x, allconnectionlist[i + 1].y, allconnectionlist[i + 1].z],  colours[colourcounter])
-                plot.draw_line([allconnectionlist[i].x, allconnectionlist[i].y, allconnectionlist[i + 1].z], [allconnectionlist[i + 1].x, allconnectionlist[i + 1].y, allconnectionlist[i + 1].z], colours[colourcounter], ax)
+                # print("LineFromTo", [allconnectionlist[i].x, allconnectionlist[i].y, allconnectionlist[i + 1].z], "To",[allconnectionlist[i + 1].x, allconnectionlist[i + 1].y, allconnectionlist[i + 1].z],  colours[colourcounter])
+                plot.draw_line([allconnectionlist[i].x, allconnectionlist[i].y, allconnectionlist[i].z], [allconnectionlist[i + 1].x, allconnectionlist[i + 1].y, allconnectionlist[i + 1].z], colours[colourcounter], ax)
             except: 
                 break 
     

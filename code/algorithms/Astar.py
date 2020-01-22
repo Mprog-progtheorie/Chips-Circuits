@@ -10,12 +10,21 @@ class Grid():
         self.grid = []
         self.g = 0
 
-    def make_grid(self):
+    def make_grid(self, blocked, start, goal):
         for x in range(-1, 17):
             for y in range(-1, 12):
                 for z in range(8):
-                    self.grid.append(Node(x, y, z))
+                    node = Node(x, y, z)
+                    # if str(node) not in blocked:
+                    #     self.grid.append(node)
+                    # else: 
+                    #     self.grid.append(node).
+                    self.grid.append(node)
+                    if str(node) in blocked and str(node) != str(start) and str(node) != str(goal):
+                        node.set_blocked()
     
+    
+
     def get_grid(self):
         return self.grid
         
@@ -26,10 +35,20 @@ class Node():
         self.y = y
         self.z = z
         self.g = 0
+        self.blocked = False
         self.parent = None
 
+    def get_blocked(self):
+        return self.blocked
+
+    def set_blocked(self):
+        self.blocked = True
+        
     def f_score(self):
         return self.g + self.h
+
+    def get_coordinate(self):
+        return str([self.x, self.y, self.z])
     
     def get_g(self):
         return self.g
@@ -51,36 +70,57 @@ class Node():
     def get_parent(self):
         return self.parent
 
-    def successors(self, grid, node_current, blocked, start):
-        self.node_successors = []
+    def successors(self, grid, node_current, closed_list, blocked, start, goal):
+        self.node_successors = set()
         
-        for i in blocked:
-            if i in grid:
-                grid.remove(i)
-        print(len(grid))
+        # grid maken waar blocked niet in zit 
+
         for i in grid:
             for j in grid:
                 if i.x == node_current.x and i.y == node_current.y and i.z == node_current.z:
                     if abs(j.x - i.x) == 1 and j.y - i.y == 0 and j.z - i.z == 0:   
-                        if j not in blocked and str(j) != str(start): 
-                            self.node_successors.append(j)
+                        if j not in closed_list and str(j) != str(start):
+                            if not j.get_blocked():
+                                self.node_successors.add(j)
                     elif abs(j.y - i.y) == 1 and j.x - i.x == 0 and j.z - i.z == 0:
-                        if j not in blocked and str(j) != str(start):
-                            self.node_successors.append(j)
+                        if j not in closed_list and str(j) != str(start):
+                            if not j.get_blocked():
+                                self.node_successors.add(j)
                     elif abs(j.z - i.z) == 1 and j.x - i.x == 0 and j.y - i.y == 0:
-                        if j not in blocked and str(j) != str(start):
-                            self.node_successors.append(j)
-                    
+                        if j not in closed_list and str(j) != str(start):
+                            if not j.get_blocked():
+                                self.node_successors.add(j)
+       
+        # print("before delete: ", self.node_successors)
         
+        
+        # coordinates = []
+        # for coordinate in blocked: 
+        #     coordinates.append(coordinate.get_coordinate())
+
+        # for successor in self.node_successors:
+        #     if successor.get_coordinate() in coordinates:
+        #         if successor.get_coordinate() == [2, 1, 0]:
+        #             print('check', coordinates)
+        #             # input()
+        #         if str(successor) != str(start) and str(successor) != str(goal):
+        #             print(successor.get_coordinate())
+        #             self.node_successors.remove(successor)
+        # print("BEFORE: ", self.node_successors)
+
+        # self.node_successors = self.node_successors - set(blocked)
+        # print("AFTER: ", self.node_successors)
+        # print(coordinates)
+        # input('end')
         return self.node_successors
 
     def __repr__(self):
         return str([self.x, self.y, self.z])
 
 
-def search(open_list, closed_list, grid, start, goal):
-    
-
+def search(open_list, closed_list, blocked, grid, start, goal):
+    # print(open_list, closed_list, blocked, start, goal)
+    # input()
     while open_list:
         f_list = []
         for i in open_list:
@@ -89,39 +129,50 @@ def search(open_list, closed_list, grid, start, goal):
         for i in range(len(f_list)):
             if f_list[i] == minimum:
                 q = open_list[i]
+
         
         if str(q) == str(goal):
             print("finished")
             break
 
-        successors = q.successors(grid, q, closed_list, start)
-        
-        node_previous = q
-            
+        successors = q.successors(grid, q, closed_list, blocked, start, goal)
+        # print("Q", q, successors)
 
+        # print("successssss", q, successors)
+        
+        # node_previous = q
+                    
+        # print("current: ", q)
         for i in successors:
 
             # Set successor_current_cost = g(node_current) + w(node_current, node_successor)
             successor_current_cost = q.get_g() + 1
             if i in open_list:
                 if i.get_g() <= successor_current_cost:
-                    break
+                    i.set_g(successor_current_cost)
+                    i.set_parent(q)    
 
             elif i in closed_list:
                 if i.get_g() <= successor_current_cost:
+                    # print("2")
                     break
+                # print("3")
                 closed_list.remove(i)
                 open_list.append(i)
             
             else:
+                # print("4")
                 open_list.append(i)
                 i.h_score(i, goal)
+            # A star werkt niet als alles dezelfde kost heeft toch een stap terug moet extra kosten hebben doordat de huristiek daar groter wordt.
+            # print("plus 1:::: ", successor_current_cost, i.h, i)
             
             i.set_g(successor_current_cost)
-            i.set_parent(q)
-        
+            i.set_parent(q)    
+         
         open_list.remove(q)
         closed_list.append(q)
+        
     return q
 
 def generate_path(crd):
@@ -133,19 +184,19 @@ def generate_path(crd):
 
     return path
 
-def initialize_grid():
+def initialize_grid(blocked, start, goal):
     grid = Grid()
-    grid.make_grid()
+    grid.make_grid(blocked, start, goal)
     return grid.get_grid()
 
-def a_star(start, goal, wire_nodes):
-    # Initialize the grid for program to run on
-    grid = initialize_grid()
-
+def a_star(start, goal, blocked):
     # Set start and goal
     start = Node(start[0], start[1], start[2])
     goal = Node(goal[0], goal[1], goal[2])
     print(start, goal)
+
+    # Initialize the grid for program to run on
+    grid = initialize_grid(blocked, start, goal)
 
     # Calculate h for start node
     start.h_score(start, goal)
@@ -154,11 +205,9 @@ def a_star(start, goal, wire_nodes):
 
     # Create lists to keep track of open nodes, closed nodes, and previous nodes for optimal path
     open_list = [start]
-    closed_list = []
-    for i in wire_nodes:
-        closed_list.append(i)
 
-    q =  search(open_list, closed_list, grid, start, goal)
+    closed_list = []
+    q =  search(open_list, closed_list, blocked, grid, start, goal)
     
     return generate_path(q)
 
