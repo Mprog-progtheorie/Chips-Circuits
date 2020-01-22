@@ -10,11 +10,11 @@ class Grid():
         self.grid = []
         self.g = 0
 
-    def make_grid(self, blocked, start, goal):
+    def make_grid(self, blocked, start, goal, net):
         for x in range(-1, 17):
             for y in range(-1, 12):
                 for z in range(8):
-                    node = Node(x, y, z)
+                    node = Node(x, y, z, net)
                     # if str(node) not in blocked:
                     #     self.grid.append(node)
                     # else: 
@@ -30,10 +30,11 @@ class Grid():
         
 
 class Node():
-    def __init__(self, x, y, z):
+    def __init__(self, x, y, z, net):
         self.x = x
         self.y = y
         self.z = z
+        self.net = net
         self.g = 0
         self.blocked = False
         self.parent = None
@@ -184,19 +185,19 @@ def generate_path(crd):
 
     return path
 
-def initialize_grid(blocked, start, goal):
+def initialize_grid(blocked, start, goal, net):
     grid = Grid()
-    grid.make_grid(blocked, start, goal)
+    grid.make_grid(blocked, start, goal, net)
     return grid.get_grid()
 
-def a_star(start, goal, blocked):
+def a_star(start, goal, blocked, net):
     # Set start and goal
-    start = Node(start[0], start[1], start[2])
-    goal = Node(goal[0], goal[1], goal[2])
+    start = Node(start[0], start[1], start[2], net)
+    goal = Node(goal[0], goal[1], goal[2], net)
     print(start, goal)
 
     # Initialize the grid for program to run on
-    grid = initialize_grid(blocked, start, goal)
+    grid = initialize_grid(blocked, start, goal, net)
 
     # Calculate h for start node
     start.h_score(start, goal)
