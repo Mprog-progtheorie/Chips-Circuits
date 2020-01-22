@@ -67,7 +67,7 @@ class Node():
                         if j not in blocked and str(j) != str(start):
                             self.node_successors.append(j)
                     
-        
+        print("blocked", blocked)
         return self.node_successors
 
     def __repr__(self):
@@ -118,6 +118,7 @@ def search(open_list, closed_list, grid, start, goal):
         
         open_list.remove(q)
         closed_list.append(q)
+        print("closed12212", closed_list)
     return q
 
 def generate_path(crd):
