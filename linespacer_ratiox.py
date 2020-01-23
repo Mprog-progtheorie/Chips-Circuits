@@ -82,10 +82,6 @@ for chips in distances:
     coordinate_begin = gate_coordinates[gate_start - 1]
     coordinate_end = gate_coordinates[gate_end - 1]
     
-    print("COORDINATES")
-    print(coordinate_begin)
-    print(coordinate_end)
-    
     # Define x, y and z coordinates of start and end gate
     x_coordinate_start = int(coordinate_begin[0])
     y_coordinate_start = int(coordinate_begin[1])
@@ -393,9 +389,7 @@ for chips in distances:
             print("NOTCOMPLETE", notcomplete)
             break
                
-    count += 1         
-    print("WIRESSSS")
-    print(wires)
+    count += 1
     
     wires_length = len(wires)
     
@@ -426,9 +420,9 @@ for chips in distances:
     
     if len(gate_connections) == len(netlist):
         # Check whether every wire reaches end gate
-        for net in netlist:
-            start_gate = int(net.gate_1)
-            end_gate = int(net.gate_2)
+        for nets in netlist:
+            start_gate = int(nets.gate_1)
+            end_gate = int(nets.gate_2)
             
             if (start_gate, end_gate) in gate_connections.keys():
                 uu = gate_connections[(start_gate, end_gate)]
@@ -449,72 +443,35 @@ for chips in distances:
                 
                     distances.append((new_net, 2))
                 
-                    longest_wire_length = 0
-                    # Select 2 longest wires and create them again
-                    for connection in gate_connections:
-                        wire_length = len(gate_connections[connection])
-                        if wire_length > longest_wire_length:
-                            longest_wire_length = wire_length
-                            delete_gate = connection
-                    
-                    new1 = (delete_gate[1], delete_gate[0])
-                    distances.append((new1, 2))
-                        
-                    del gate_connections[delete_gate]
-                
-                    longest_wire_length = 0
-                    # Select 2 longest wires and create them again
-                    for connection in gate_connections:
-                        wire_length = len(gate_connections[connection])
-                        if wire_length > longest_wire_length:
-                            longest_wire_length = wire_length
-                            delete_gate2 = connection
-                    
-                    new2 = (delete_gate2[1], delete_gate2[0])
-                    distances.append((new2, 2))
-                    
-                    del gate_connections[delete_gate2]
-                    
-                    longest_wire_length = 0
-                    # Select 2 longest wires and create them again
-                    for connection in gate_connections:
-                        wire_length = len(gate_connections[connection])
-                        if wire_length > longest_wire_length:
-                            longest_wire_length = wire_length
-                            delete_gate3 = connection
-                    
-                    new3 = (delete_gate3[1], delete_gate3[0])
-                    distances.append((new3, 2))
-                    
-                    del gate_connections[delete_gate3]
-                    
-                    longest_wire_length = 0
-                    # Select 2 longest wires and create them again
-                    for connection in gate_connections:
-                        wire_length = len(gate_connections[connection])
-                        if wire_length > longest_wire_length:
-                            longest_wire_length = wire_length
-                            delete_gate4 = connection
-                    
-                    new4 = (delete_gate4[1], delete_gate4[0])
-                    distances.append((new4, 2))
-                        
-                    del gate_connections[delete_gate4]
+                    # Repeat this 4 times
+                    for repeat in range(4):
+                        longest_wire_length = 0
+                        # Select longest wire and create again
+                        for connection in gate_connections:
+                            wire_length = len(gate_connections[connection])
+                            if wire_length > longest_wire_length:
+                                longest_wire_length = wire_length
+                                delete_gate = connection
+            
+                        new_wire = (delete_gate[1], delete_gate[0])
+                        distances.append((new_wire, 2))
+            
+                        del gate_connections[delete_gate]
 
-                    deletewire = []
-                    # Delete blocking wire
-                    for i, item2 in enumerate(allwires):
-                        if item2.net == gate_net or item2.net == delete_gate or item2.net == delete_gate2:
-                            deletewire.append(allwires[i])
+                        deletewire = []
+                        # Delete blocking wire
+                        for i, item2 in enumerate(allwires):
+                            if item2.net == gate_net or item2.net == delete_gate:
+                                deletewire.append(allwires[i])
 
-                    for delete_wire in deletewire:
-                        allwires.remove(delete_wire)
+                        for delete_wire in deletewire:
+                            allwires.remove(delete_wire)
     
 print(gate_connections)
 print(len(gate_connections))
 print("JOEJOE")
-print("ALL WIRESSS")
-print(allwires[0].coordinate)
+# print("ALL WIRESSS")
+# print(allwires[0].coordinate)
 # print(gate_connections[(17,10)])
 
 
