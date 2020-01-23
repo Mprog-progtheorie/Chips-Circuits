@@ -129,6 +129,68 @@ if __name__ == '__main__':
 
         a_star_route = Astar.a_star(coordinate_begin, coordinate_end, blocked, connected_gate)
 
+        # if vastloper:
+        x_coordinate_check = x_coordinate_end + step_x
+        check_coordinate = [x_coordinate_check, y_coordinate_end, z_coordinate_end]
+        for item in allwires:
+            if item.coordinate == check_coordinate and item.net[0] != gate_end and item.net[1] != gate_end:
+                (wires, x_coordinate_start, y_coordinate_start, z_coordinate_start, coordinate, gate_connections, allwires) = delete.delete_wire(wires, coordinate_begin, item.net, distances, gate_connections, allwires)
+                break
+            else:
+                copy_gate_connections = copy.deepcopy(gate_connections)
+                for key in copy_gate_connections:
+                    if len(copy_gate_connections[key]) > 75:
+                        (wires, x_coordinate_start, y_coordinate_start, z_coordinate_start, coordinate, gate_connections, allwires) = delete.delete_wire(wires, coordinate_begin, item.net, distances, gate_connections, allwires)
+            break            
+        x_coordinate_check = x_coordinate_end - step_x
+        check_coordinate = [x_coordinate_check, y_coordinate_end, z_coordinate_end]
+        for item in allwires:
+            if item.coordinate == check_coordinate and item.net[0] != gate_end and item.net[1] != gate_end:
+                (wires, x_coordinate_start, y_coordinate_start, z_coordinate_start, coordinate, gate_connections, allwires) = delete.delete_wire(wires, coordinate_begin, item.net, distances, gate_connections, allwires)
+                break
+            else:
+                copy_gate_connections = copy.deepcopy(gate_connections)
+                for key in copy_gate_connections:
+                    if len(copy_gate_connections[key]) > 75:
+                        (wires, x_coordinate_start, y_coordinate_start, z_coordinate_start, coordinate, gate_connections, allwires) = delete.delete_wire(wires, coordinate_begin, item.net, distances, gate_connections, allwires)
+            break
+        y_coordinate_check = y_coordinate_end + step_y
+        check_coordinate = [x_coordinate_end, y_coordinate_check, z_coordinate_end]
+        for item in allwires:
+            if item.coordinate == check_coordinate and item.net[0] != gate_end and item.net[1] != gate_end:
+                (wires, x_coordinate_start, y_coordinate_start, z_coordinate_start, coordinate, gate_connections, allwires) = delete.delete_wire(wires, coordinate_begin, item.net, distances, gate_connections, allwires)
+                break
+            else:
+                copy_gate_connections = copy.deepcopy(gate_connections)
+                for key in copy_gate_connections:
+                    if len(copy_gate_connections[key]) > 75:
+                        (wires, x_coordinate_start, y_coordinate_start, z_coordinate_start, coordinate, gate_connections, allwires) = delete.delete_wire(wires, coordinate_begin, item.net, distances, gate_connections, allwires)
+            break
+        y_coordinate_check = y_coordinate_end - step_y
+        check_coordinate = [x_coordinate_end, y_coordinate_check, z_coordinate_end]
+        for item in allwires:
+            if item.coordinate == check_coordinate and item.net[0] != gate_end and item.net[1] != gate_end:
+                (wires, x_coordinate_start, y_coordinate_start, z_coordinate_start, coordinate, gate_connections, allwires) = delete.delete_wire(wires, coordinate_begin, item.net, distances, gate_connections, allwires)
+                break
+            else:
+                copy_gate_connections = copy.deepcopy(gate_connections)
+                for key in copy_gate_connections:
+                    if len(copy_gate_connections[key]) > 75:
+                        (wires, x_coordinate_start, y_coordinate_start, z_coordinate_start, coordinate, gate_connections, allwires) = delete.delete_wire(wires, coordinate_begin, key, distances, gate_connections, allwires)
+            break
+        z_coordinate_check = z_coordinate_end + 1
+        check_coordinate = [x_coordinate_end, y_coordinate_end, z_coordinate_check]
+        for item in allwires:
+            if item.coordinate == check_coordinate and item.net[0] != gate_end and item.net[1] != gate_end:
+                (wires, x_coordinate_start, y_coordinate_start, z_coordinate_start, coordinate, gate_connections, allwires) = delete.delete_wire(wires, coordinate_begin, item.net, distances, gate_connections, allwires)
+                break
+            else:
+                copy_gate_connections = copy.deepcopy(gate_connections)
+                for key in copy_gate_connections:
+                    if len(copy_gate_connections[key]) > 75:
+                        (wires, x_coordinate_start, y_coordinate_start, z_coordinate_start, coordinate, gate_connections, allwires) = delete.delete_wire(wires, coordinate_begin, key, distances, gate_connections, allwires)
+            break
+                    
 
         for i in a_star_route:
             wire = classs.Wire([i.x, i.y, i.z], connected_gate)
