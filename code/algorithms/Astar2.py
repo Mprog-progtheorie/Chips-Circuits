@@ -37,6 +37,7 @@ def a_star(start, end, grid):
         path = pq.get()[1]
         current = path[-1]
         if current == end:
+            print("path", path)
             return path
 
         for i in neighbours(current, grid, path):
@@ -46,33 +47,34 @@ def a_star(start, end, grid):
                 pq.put((f, new_path))
                 visited.add(i)
 
-        print(len(path))
+        # print(len(path))
 
     return False
 
-def make_grid():
+def make_grid(gate_connections):
     grid = {}
     for x in range(17):
         for y in range(12):
             for z in range(8):
+                if x == 1 and y < 5:
+                    grid[(x, y, z)] = False
+                else:
                     grid[(x, y, z)] = True
     return grid
 
-start_time = time.time()
-grid = make_grid()
+
+# grid = make_grid()
 
 
-start = (1, 1, 0)
-end = (1, 5, 0)
-search = a_star(start, end, grid)
-for crd in search:
-    grid[crd] = False
-print(search)
+# start = (1, 1, 0)
+# end = (1, 5, 0)
+# search = a_star(start, end, grid)
+# for crd in search:
+#     grid[crd] = False
+# print(search)
 
 
-start = (0, 2, 0)
-end = (2, 4, 0)
-search = a_star(start, end, grid)
-print(search)
-end_time = time.time()
-print("time", end_time - start_time)
+# start = (0, 2, 0)
+# end = (2, 4, 0)
+# search = a_star(start, end, grid)
+# print(search)
