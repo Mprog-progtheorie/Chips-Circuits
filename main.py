@@ -12,10 +12,10 @@ import csv
 if __name__ == '__main__':
     start_time = time.time()
     # Create netlist by loading file in class
-    netlist = classs.Netlist("data/example_net3.csv").netlist
+    netlist = classs.Netlist("data/netlist_1.csv").netlist
 
     # Create list for gate coordinates
-    gate_coordinates = classs.Gate_coordinate("data/example_prit3.csv").gate_coordinates
+    gate_coordinates = classs.Gate_coordinate("data/pritn_1.csv").gate_coordinates
   
     gate_connections = {}
 
@@ -29,7 +29,7 @@ if __name__ == '__main__':
         alle gate_coordinaten
         geef een lijst mee met coordinaten waar al draad ligt
     """ 
-    ax = plot.make_grid(8, 5)
+    ax = plot.make_grid(8, 17)
     # string_gates = [] 
     blocked = []
     allwires = []
@@ -55,16 +55,14 @@ if __name__ == '__main__':
         coordinate_start = gate_coordinates[gate_start - 1]
         coordinate_end = gate_coordinates[gate_end - 1]
 
-        x_coordinate_1 = int(coordinate_start[0])
-        y_coordinate_1 = int(coordinate_start[1])
-
-        x_coordinate_2 = int(coordinate_end[0])
-        y_coordinate_2 = int(coordinate_end[1])
+        # Define x coordinates for start and end gate
+        x_coordinate_start = int(coordinate_start[0])
+        x_coordinate_end = int(coordinate_end[0])
 
         # Calculate total shortest distance between gates
-        total_dist = abs(x_coordinate_1 - x_coordinate_2) + abs(y_coordinate_1 - y_coordinate_2)
+        x_dist = abs(x_coordinate_start - x_coordinate_end)
 
-        distances.update({connected_gate: total_dist})
+        distances.update({connected_gate: x_dist})
 
     # Sort connections from smallest to largest distance in dictionary
     distances = list(distances.items())
@@ -116,8 +114,8 @@ if __name__ == '__main__':
         for coo in allwires:
             # print("JOEJOE")
             all_coordinates.append(coo.get_coordinate())
-        
-        print("Before1st: ", len(allwires))
+        print("CONNECTING GATE: ", connected_gate)
+        # print("Before1st: ", distances)
 
         # Checks whether wire can move in any direction, if at least one coordinate around current coordinate is free
         if all(elem in all_coordinates for elem in coordinate_check):
@@ -125,50 +123,57 @@ if __name__ == '__main__':
             for coor in coordinate_check:
                 for item_start in allwires:
                     if item_start.coordinate == coor and item_start.net[0] != gate_start and item_start.net[1] != gate_start:
+                        print("DELETE: ", item_start.net)
                         (wires, x_coordinate_start, y_coordinate_start, z_coordinate_start, coordinate, gate_connections, allwires, blocked) = astardelete.delete_wire(coordinate_begin, item_start.net, distances, gate_connections, allwires, blocked)
                         break
-        print("AFTER1st: ", len(allwires))
+        # print("AFTER1st: ", distances)
 
         a_star_route = Astar.a_star(coordinate_begin, coordinate_end, blocked, connected_gate)
 
-        print("LENALLWIRES: ",len(allwires))
+        # print("LENALLWIRES: ",len(allwires))
 
         if str(a_star_route[0]) != str(coordinate_end):
-            print("EQUAL: ", str(a_star_route[0]), str(coordinate_end))
-            # Define all 5 coordinates that surround current end coordinate
-            x_coordinate_endcheck = x_coordinate_end + 1
-            coordinate_end_1 = [x_coordinate_endcheck, y_coordinate_end, z_coordinate_end]
-            x_coordinate_endcheck2 = x_coordinate_end - 1
-            coordinate_end_2 = [x_coordinate_endcheck2, y_coordinate_end, z_coordinate_end]
-            y_coordinate_endcheck = y_coordinate_end + 1
-            coordinate_end_3 = [x_coordinate_end, y_coordinate_endcheck, z_coordinate_end]
-            y_coordinate_endcheck2 = y_coordinate_end - 1
-            coordinate_end_4 = [x_coordinate_end, y_coordinate_endcheck2, z_coordinate_end]
-            z_coordinate_endcheck = z_coordinate_end + 1
-            coordinate_end_5 = [x_coordinate_end, y_coordinate_end, z_coordinate_endcheck]
+            print("CANT REACH SO DELETE WIRES AROUND: ", gate_end)
 
+            x_coordinate_end = int(coordinate_end[0])
+            y_coordinate_end = int(coordinate_end[1])
+            z_coordinate_end = int(coordinate_end[2])
+
+            # Define all 5 coordinates that surround current start coordinate
+            x_coordinate_endcheck = x_coordinate_end + 1
+            coordinate_1 = [x_coordinate_endcheck, y_coordinate_end, z_coordinate_end]
+            x_coordinate_endcheck2 = x_coordinate_end - 1
+            coordinate_2 = [x_coordinate_endcheck2, y_coordinate_end, z_coordinate_end]
+            y_coordinate_endcheck = y_coordinate_end + 1
+            coordinate_3 = [x_coordinate_end, y_coordinate_endcheck, z_coordinate_end]
+            y_coordinate_endcheck2 = y_coordinate_end - 1
+            coordinate_4 = [x_coordinate_end, y_coordinate_endcheck2, z_coordinate_end]
+            z_coordinate_endcheck = z_coordinate_end + 1
+            coordinate_5 = [x_coordinate_end, y_coordinate_end, z_coordinate_endcheck]
+            
+            
             # Saves all coordinates around current start coordinate in list
-            coordinate_end_check = [coordinate_end_1, coordinate_end_2, coordinate_end_3, coordinate_end_4, coordinate_end_5]
+            coordinate_check = [coordinate_1, coordinate_2, coordinate_3, coordinate_4, coordinate_5]
             
             # Creates list for all coordinates that are already occupied
-            all_coordinates_for_end = []
-            counter = 0
-            for coo_wire in allwires:
-                counter += 1
-                print("ADD: ", coo_wire.get_coordinate(), counter)
-                all_coordinates_for_end.append(coo_wire.get_coordinate())
-            
-            print("CHECKCOOR", all_coordinates_for_end, "CHECK", coordinate_end_check)
+            all_coordinates = []
+            for coo in allwires:
+                # print("JOEJOE")
+                all_coordinates.append(coo.get_coordinate())
+           
+            # print("Before1st: ", distances)
+
             # Checks whether wire can move in any direction, if at least one coordinate around current coordinate is free
-            if all(elem in all_coordinates_for_end for elem in coordinate_end_check):
-                # print("ELEM2", elem, coordinate_end_check)
-                for coor_end in coordinate_check:
-                    for item_end in allwires:
-                        if item_end.coordinate == coor_end and item_end.net[0] != gate_end and item_end.net[1] != gate_end:
+            if all(elem in all_coordinates for elem in coordinate_check):
+                print("INNNNSECOND DELETE")
+                for coor in coordinate_check:
+                    for item_start in allwires:
+                        if item_start.coordinate == coor and item_start.net[0] != gate_start and item_start.net[1] != gate_start:
+                            print("DELETE: ", item_start.net)
                             (wires, x_coordinate_start, y_coordinate_start, z_coordinate_start, coordinate, gate_connections, allwires, blocked) = astardelete.delete_wire(coordinate_begin, item_start.net, distances, gate_connections, allwires, blocked)
                             break
-                a_star_route = Astar.a_star(coordinate_begin, coordinate_end, blocked, connected_gate)          
-            
+            a_star_route = Astar.a_star(coordinate_begin, coordinate_end, blocked, connected_gate)                
+          
         for i in a_star_route:
             wire = classs.Wire([i.x, i.y, i.z], connected_gate)
             allwires.append(wire)    
@@ -176,12 +181,17 @@ if __name__ == '__main__':
         
         a_star_route.reverse()
         print("NET: ", a_star_route)
-        gate_connections.update({connected_gate: a_star_route})
-        
+        if str(a_star_route[0]) == str(coordinate_begin) and str(a_star_route[len(a_star_route) - 1]) == str(coordinate_end):
+            gate_connections.update({connected_gate: a_star_route})
+        else: 
+            print(str(a_star_route[0]), str(coordinate_begin) , str(a_star_route[len(a_star_route) - 1]) ,str(coordinate_end))
+            distances.append((connected_gate, 2))
+        print("WIRESCOMPLETED: ", len(gate_connections))
+        print()
 
     
-        # if len(gate_connections) > 26: 
-        #     break
+        if len(gate_connections) > 25: 
+            break
 
 
 
@@ -191,6 +201,14 @@ if __name__ == '__main__':
     end_time = time.time()
     print("TIME: ", end_time - start_time)
     print(len(gate_connections))
+    length = 0
+    # Calculate total length of wires
+    for key in gate_connections:
+        wire = gate_connections[key]
+        length = length + len(wire)
+        
+    print("TOTAL LENGTH")
+    print(length)
 
     allConnections = []
     colours = ['b','lightgreen','cyan','m','yellow','k', 'pink']
@@ -211,5 +229,7 @@ if __name__ == '__main__':
                 plot.draw_line([allconnectionlist[i].x, allconnectionlist[i].y, allconnectionlist[i].z], [allconnectionlist[i + 1].x, allconnectionlist[i + 1].y, allconnectionlist[i + 1].z], colours[colourcounter], ax)
             except: 
                 break 
-    
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_zlabel('z')
     plt.show()

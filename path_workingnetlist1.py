@@ -444,7 +444,6 @@ def make_grid(layers, size):
         GridX = np.linspace(0, size, (size + 1))
         GridY = np.linspace(0, size, (size + 1))
         X, Y = np.meshgrid(GridX, GridY)
-        Z = (np.sin(np.sqrt(X ** 2 + Y ** 2)) * 0) + i
         # Plot grid
         # ax.plot_wireframe(X, Y, Z, lw=0.5,  color='grey')
     #configure axes

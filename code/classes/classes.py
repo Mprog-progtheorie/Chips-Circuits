@@ -9,8 +9,8 @@ class Wire():
         return self.coordinate
         
     def __repr__(self):
-        # return f"{self.coordinate}, {self.net}"
-        return str(self.coordinate, self.net)
+        return f"{self.coordinate}, {self.net}"
+        # return str(self.coordinate, self.net)
 
 class Gate_coordinate():
     def __init__(self, gate_file):

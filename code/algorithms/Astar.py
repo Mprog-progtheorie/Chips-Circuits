@@ -11,8 +11,8 @@ class Grid():
         self.g = 0
 
     def make_grid(self, blocked, start, goal, net):
-        for x in range(-1, 5):
-            for y in range(-1, 5):
+        for x in range(-1, 17):
+            for y in range(-1, 12):
                 for z in range(8):
                     node = Node(x, y, z, net)
                     # if str(node) not in blocked:
@@ -150,8 +150,8 @@ def search(open_list, closed_list, blocked, grid, start, goal):
 
             # Make it more expensive to traverse the x or y axis on lower layers
             weight = 1
-            if i.x != q.x or i.y != q.y:
-                weight += 8 - q.z
+            # if i.x != q.x or i.y != q.y:
+            #     weight += 8 - q.z
 
 
             successor_current_cost = q.get_g() + weight
