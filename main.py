@@ -126,8 +126,9 @@ if __name__ == '__main__':
                     if item_start.coordinate == coor and item_start.net[0] != gate_start and item_start.net[1] != gate_start:
                         (wires, x_coordinate_start, y_coordinate_start, z_coordinate_start, coordinate, gate_connections, allwires, blocked) = astardelete.delete_wire(coordinate_begin, item_start.net, distances, gate_connections, allwires, blocked)
                         break
-
+        
         a_star_route = Astar.a_star(coordinate_begin, coordinate_end, blocked, connected_gate)
+        end_time_3 = time.time()
 
         # if vastloper:
         # x_coordinate_check = x_coordinate_end + step_x
