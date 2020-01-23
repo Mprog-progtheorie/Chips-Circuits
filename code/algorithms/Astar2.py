@@ -14,7 +14,9 @@ def neighbours(current, grid, path):
 
     for i in moves:
         neighbour = tuple(np.array(current) + np.array(i))
-        if neighbour not in set(path):
+        # print(type(neighbour))
+        # if neighbour not in set(path):
+        if neighbour not in path:
             if neighbour in grid:
                 if grid[neighbour]:
                     neighbours.append(neighbour)
@@ -50,8 +52,8 @@ def a_star(start, end, grid):
 
 def make_grid():
     grid = {}
-    for x in range(10):
-        for y in range(10):
+    for x in range(17):
+        for y in range(12):
             for z in range(8):
                     grid[(x, y, z)] = True
     return grid
