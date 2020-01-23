@@ -21,8 +21,8 @@ def make_grid(layers, size):
         # ax.plot_wireframe(X, Y, Z, lw=0.5,  color='grey')
     #configure axes
     ax.set_zlim3d(0, layers)
-    ax.set_xlim3d(0, size)
-    ax.set_ylim3d(0, size)
+    ax.set_xlim3d(-1, size)
+    ax.set_ylim3d(-1, size)
 
     return ax
 
