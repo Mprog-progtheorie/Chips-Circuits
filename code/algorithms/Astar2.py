@@ -51,13 +51,12 @@ def a_star(start, end, grid):
 
     return False
 
-def make_grid(gate_coordinates):
+def make_grid():
     grid = {}
     for x in range(17):
         for y in range(12):
             for z in range(8):
-                if [x, y, z] in gate_coordinates or [x, y, z] == [2, 4, 0]:
-                    print("JOJEO")
+                if x == 1 and y < 5:   
                     grid[(x, y, z)] = False
                 else:
                     grid[(x, y, z)] = True

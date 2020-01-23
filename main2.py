@@ -77,39 +77,55 @@ if __name__ == '__main__':
         if not swapped:
             break
 
-    grid = Astar.make_grid(gate_coordinates)
+    # grid = Astar.make_grid(gate_coordinates)
 
     # for gate_crd in gate_coordinates:
     #     grid[tuple(gate_crd)] = False
 
-    for chips in distances:
-        gate_start = int(chips[0][0])
-        gate_end = int(chips[0][1])
+    # for chips in distances:
+        # gate_start = int(chips[0][0])
+        # gate_end = int(chips[0][1])
+
+        # connected_gate = (gate_start, gate_end)
+
+        # coordinate_begin = gate_coordinates[gate_start - 1]
+        # coordinate_end = gate_coordinates[gate_end - 1]
+
+        # grid[tuple(coordinate_begin)] = True
+        # grid[tuple(coordinate_end)] = True
+
+        # # print(grid)
         
+        # a_star_path = Astar.a_star(tuple(coordinate_begin), tuple(coordinate_end), grid)
+        # if not a_star_path:
+        #     for crd in a_star_path: 
+        #         grid[crd] = False
+
+        # end_time_3 = time.time()
+        # print(a_star_path)
         
-
-        connected_gate = (gate_start, gate_end)
-
-        coordinate_begin = gate_coordinates[gate_start - 1]
-        coordinate_end = gate_coordinates[gate_end - 1]
-
-        grid[tuple(coordinate_begin)] = True
-        grid[tuple(coordinate_end)] = True
-
-        # print(grid)
-        
-        a_star_path = Astar.a_star(tuple(coordinate_begin), tuple(coordinate_end), grid)
-        if not a_star_path:
-            for crd in a_star_path: 
-                grid[crd] = False
-
-        end_time_3 = time.time()
-        print(a_star_path)
-        
-        gate_connections.update({connected_gate: a_star_path})
+        # gate_connections.update({connected_gate: a_star_path})
+        # start_time = time.time()
+    grid = Astar.make_grid()
 
 
+    start = (1, 1, 0)
+    end = (1, 5, 0)
+    search = Astar.a_star(start, end, grid)
+    for crd in search:
+        grid[crd] = False
+    print(search)
+    gate_connections.update({(1,1): search})
 
+
+    start = (0, 2, 0)
+    end = (2, 4, 0)
+    search = Astar.a_star(start, end, grid)
+    print(search)
+    end_time = time.time()
+    print("time", end_time - start_time) 
+
+    gate_connections.update({(1,2): search})
 
     print(gate_connections)
 
