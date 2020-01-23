@@ -16,11 +16,8 @@ def delete_wire(wires, coordinate_begin, itemnet, distances, gate_connections, a
     # Delete blocking wire
     for i, item2 in enumerate(allwires):
         if item2.net == itemnet:
-            print("DELETETOM")
-            # print(allwires[i])
             deletelist.append(allwires[i])
 
     for delete_wire in deletelist:
-        print("REALDELETE")
         allwires.remove(delete_wire)
     return wires, x_coordinate_start, y_coordinate_start, z_coordinate_start, coordinate, gate_connections, allwires

@@ -12,10 +12,10 @@ import csv
 if __name__ == '__main__':
     start_time = time.time()
     # Create netlist by loading file in class
-    netlist = classs.Netlist("data/netlist_1.csv").netlist
+    netlist = classs.Netlist("data/example_net3.csv").netlist
 
     # Create list for gate coordinates
-    gate_coordinates = classs.Gate_coordinate("data/pritn_1.csv").gate_coordinates
+    gate_coordinates = classs.Gate_coordinate("data/example_prit3.csv").gate_coordinates
   
     gate_connections = {}
 
@@ -29,7 +29,7 @@ if __name__ == '__main__':
         alle gate_coordinaten
         geef een lijst mee met coordinaten waar al draad ligt
     """ 
-    ax = plot.make_grid(8, 16)
+    ax = plot.make_grid(8, 5)
     # string_gates = [] 
     blocked = []
     allwires = []
