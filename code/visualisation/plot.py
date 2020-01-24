@@ -39,5 +39,11 @@ def set_gate(crd, ax):
     PointX = [crd[0]]
     PointY = [crd[1]]
     PointZ = [crd[2]]
+    # s = str(1)
     # Plot points
+    # ax.text(PointX, PointY, s, fontsize=12)
+    # plt.text(60, .025, r'$\mu=100,\ \sigma=15$')
+
+    # plt.text(PointX, PointY,  '1', horizontalalignment='center', verticalalignment='center', transform=ax.transAxes)
     ax.plot(PointX, PointY, PointZ, ls="None", marker="o", color='red')
+    # ax.plot(PointX, PointY, PointZ, ls="None", marker="$gate$", color='black')

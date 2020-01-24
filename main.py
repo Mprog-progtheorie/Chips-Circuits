@@ -48,21 +48,25 @@ if __name__ == '__main__':
     for item in netlist:
         gate_start = int(item.gate_1)
         gate_end = int(item.gate_2)
-                    
+        
         # Create tuple for gates that have to be connected
         connected_gate = (gate_start, gate_end)
         
+        # Define coordinates of start and end gate
         coordinate_start = gate_coordinates[gate_start - 1]
         coordinate_end = gate_coordinates[gate_end - 1]
-
-        # Define x coordinates for start and end gate
+        
+        # Define x and y coordinates for start and end gate
         x_coordinate_start = int(coordinate_start[0])
+        y_coordinate_start = int(coordinate_start[1])
+
         x_coordinate_end = int(coordinate_end[0])
+        y_coordinate_end = int(coordinate_end[1])
 
         # Calculate total shortest distance between gates
-        x_dist = abs(x_coordinate_start - x_coordinate_end)
+        total_dist = abs(x_coordinate_start - x_coordinate_end) + abs(y_coordinate_start - y_coordinate_end)
 
-        distances.update({connected_gate: x_dist})
+        distances.update({connected_gate: total_dist})
 
     # Sort connections from smallest to largest distance in dictionary
     distances = list(distances.items())
@@ -74,6 +78,7 @@ if __name__ == '__main__':
                 swapped = True
         if not swapped:
             break
+
 
     for chips in distances:
         gate_start = int(chips[0][0])
@@ -227,6 +232,7 @@ if __name__ == '__main__':
         for i in range(len(allconnectionlist)):
             try: 
                 plot.draw_line([allconnectionlist[i].x, allconnectionlist[i].y, allconnectionlist[i].z], [allconnectionlist[i + 1].x, allconnectionlist[i + 1].y, allconnectionlist[i + 1].z], colours[colourcounter], ax)
+                plt.pause(0.0001)
             except: 
                 break 
     ax.set_xlabel('x')

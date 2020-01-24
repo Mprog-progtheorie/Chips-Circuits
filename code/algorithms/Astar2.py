@@ -19,7 +19,7 @@ def neighbours(current, grid, path):
         if neighbour not in path:
             if neighbour in grid:
                 if grid[neighbour]:
-                    print(grid[neighbour])
+                    # print(grid[neighbour])
                     neighbours.append(neighbour)
 
     return neighbours
@@ -56,10 +56,7 @@ def make_grid():
     for x in range(17):
         for y in range(12):
             for z in range(8):
-                if x == 1 and y < 5:   
-                    grid[(x, y, z)] = False
-                else:
-                    grid[(x, y, z)] = True
+                grid[(x, y, z)] = True
      
     return grid
 

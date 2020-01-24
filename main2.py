@@ -19,10 +19,6 @@ if __name__ == '__main__':
 
     gate_connections = {}
 
-
-
-
-
     """
     # TODO
         geef de begin en eindgate mee
@@ -81,18 +77,22 @@ if __name__ == '__main__':
 
     # for gate_crd in gate_coordinates:
     #     grid[tuple(gate_crd)] = False
+    grid = Astar.make_grid()
+    for gate_coo in gate_coordinates:
+        grid[tuple(gate_coo)] = False
 
-    # for chips in distances:
-        # gate_start = int(chips[0][0])
-        # gate_end = int(chips[0][1])
 
-        # connected_gate = (gate_start, gate_end)
+    for chips in distances:
+        gate_start = int(chips[0][0])
+        gate_end = int(chips[0][1])
 
-        # coordinate_begin = gate_coordinates[gate_start - 1]
-        # coordinate_end = gate_coordinates[gate_end - 1]
+        connected_gate = (gate_start, gate_end)
 
-        # grid[tuple(coordinate_begin)] = True
-        # grid[tuple(coordinate_end)] = True
+        coordinate_begin = gate_coordinates[gate_start - 1]
+        coordinate_end = gate_coordinates[gate_end - 1]
+
+        grid[tuple(coordinate_begin)] = True
+        grid[tuple(coordinate_end)] = True
 
         # # print(grid)
         
@@ -106,34 +106,31 @@ if __name__ == '__main__':
         
         # gate_connections.update({connected_gate: a_star_path})
         # start_time = time.time()
-    grid = Astar.make_grid()
+    
 
 
-    start = (1, 1, 0)
-    end = (1, 5, 0)
-    search = Astar.a_star(start, end, grid)
-    for crd in search:
-        grid[crd] = False
-    print(search)
-    gate_connections.update({(1,1): search})
+        
+        search = Astar.a_star(tuple(coordinate_begin), tuple(coordinate_end), grid)
+        try:
+            for crd in search:
+                grid[crd] = False
+            gate_connections.update({connected_gate: search})
+        except:
+            print("NOTCOMPLETED: ", search)
+        # print(search)
+        # for cr in grid:
+        #     if not grid[cr]: 
+        #         # print("False on: ",cr)
+        
 
 
-    start = (0, 2, 0)
-    end = (2, 4, 0)
-    search = Astar.a_star(start, end, grid)
-    print(search)
-    end_time = time.time()
-    print("time", end_time - start_time) 
-
-    gate_connections.update({(1,2): search})
-
-    print(gate_connections)
+    print("LENGTH: ",len(gate_connections))
 
     end_time = time.time()
     print("TIME: ", end_time - start_time)
 
     allConnections = []
-    colours = ['b','lightgreen','cyan','m','yellow','k', 'pink']
+    colours = ['b', 'darkblue', 'k', 'green', 'cyan','m','yellow','lightgreen', 'pink']
     colourcounter = 0
     for keys in gate_connections:
         allConnections = gate_connections[keys]
