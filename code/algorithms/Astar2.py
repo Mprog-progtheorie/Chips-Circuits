@@ -28,7 +28,15 @@ def a_star(start, end, grid):
     pq = PriorityQueue()
 
     path = [start]
-    f = 0 + heuristic(start, end)
+    for i in range(8):
+        temp = list(start)
+        temp[2] = i
+        temp = tuple(temp)
+        if grid[temp]:
+            path.append(temp)
+        else:
+            break
+    f = 0 + heuristic(temp, end)
 
     visited = set()
 
@@ -47,14 +55,14 @@ def a_star(start, end, grid):
                 pq.put((f, new_path))
                 visited.add(i)
 
-        print(len(path))
+        # print(len(path))
 
     return False
 
 def make_grid():
     grid = {}
     for x in range(17):
-        for y in range(12):
+        for y in range(13):
             for z in range(8):
                 grid[(x, y, z)] = True
      
