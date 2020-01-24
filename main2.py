@@ -1,57 +1,31 @@
 from code.visualisation import plot as plot
 from code.classes import classes as classs
-from code.functions import astardelete as astardelete                     
+from code.functions import DeleteNew as delete                     
 from code.algorithms import Astar2 as Astar
 import copy
 import matplotlib.pyplot as plt
 import time
 import csv
-
-
+import random
 
 if __name__ == '__main__':
     start_time = time.time()
     # Create netlist by loading file in class
-    netlist = classs.Netlist("data/example_net3.csv").netlist
+    netlist = classs.Netlist("data/netlist_2.csv").netlist
 
     # Create list for gate coordinates
-    gate_coordinates = classs.Gate_coordinate("data/example_prit3.csv").gate_coordinates
-  
-    gate_connections = {}
+    gate_coordinates = classs.Gate_coordinate("data/pritn_1.csv").gate_coordinates
 
     
-
-   
-    
-    """
-    # TODO
-        geef de begin en eindgate mee
-        alle gate_coordinaten
-        geef een lijst mee met coordinaten waar al draad ligt
-    """ 
-    ax = plot.make_grid(8, 5)
-    # string_gates = [] 
-    blocked = []
-    allwires = []
-
-
-    for gate_coordinate in gate_coordinates: 
-        # blocked.append(Astar.Node(gate_coordinate[0], gate_coordinate[1], gate_coordinate[2]).set_blocked())
-        blocked.append(str(gate_coordinate))
-        plot.set_gate(gate_coordinate, ax)
-            
     distances = {}
-    # for net in netlist: 
-    #     start = gate_coordinates[int(net.gate_1) - 1]
-    #     goal = gate_coordinates[int(net.gate_2) - 1]
 
     for item in netlist:
         gate_start = int(item.gate_1)
         gate_end = int(item.gate_2)
-                    
+
         # Create tuple for gates that have to be connected
         connected_gate = (gate_start, gate_end)
-        
+
         coordinate_start = gate_coordinates[gate_start - 1]
         coordinate_end = gate_coordinates[gate_end - 1]
 
@@ -67,7 +41,9 @@ if __name__ == '__main__':
         distances.update({connected_gate: total_dist})
 
     # Sort connections from smallest to largest distance in dictionary
+    print(distances.items())
     distances = list(distances.items())
+    
     for max_number in range(len(distances)-1, -1, -1):
         swapped = False
         for count in range(max_number):
@@ -76,49 +52,129 @@ if __name__ == '__main__':
                 swapped = True
         if not swapped:
             break
-
-    for chips in distances:
-        gate_start = int(chips[0][0])
-        gate_end = int(chips[0][1])
     
-        connected_gate = (gate_start, gate_end)
+    
+    count = 1
+    
+    while count == 1:
+        count = 0
 
-        coordinate_begin = gate_coordinates[gate_start - 1]
-        coordinate_end = gate_coordinates[gate_end - 1]
+        gate_connections = {}
 
+        
+        # string_gates = [] 
+
+
+       
+
+        
         grid = Astar.make_grid()
+        for gate_coo in gate_coordinates:
+            grid[tuple(gate_coo)] = False
 
-        a_star_path = Astar.a_star(coordinate_begin, coordinate_end, grid)
-        end_time_3 = time.time()
-        print(a_star_path)
-        gate_connections.update({connected_gate: a_star_path})
+        blocking_wires = []
+        print("DIS: ",distances)
+        # random.shuffle(distances)
+        for chips in distances:
+            gate_start = int(chips[0][0])
+            gate_end = int(chips[0][1])
+            manhatten_length = chips[1]
 
 
+            connected_gate = (gate_start, gate_end)
 
+            coordinate_begin = gate_coordinates[gate_start - 1]
+            coordinate_end = gate_coordinates[gate_end - 1]
 
-    print(gate_connections)
+            grid[tuple(coordinate_begin)] = True
+            grid[tuple(coordinate_end)] = True
+            
+            search = Astar.a_star(tuple(coordinate_begin), tuple(coordinate_end), grid)
+            # print("SEARCH: ",search, connected_gate) 
+            
+            try:
+                for crd in search:
+                    grid[crd] = False
+                gate_connections.update({connected_gate: search})
+            except:
+                # # print(coordinate_begin)
+                # (grid, gate_connections, distances) = delete.delete_begin(coordinate_begin, grid, gate_connections, gate_start, distances)
+                # (grid, gate_connections, distances) = delete.delete_end(coordinate_begin, grid, gate_connections, gate_end, distances)
+
+                # search = Astar.a_star(tuple(coordinate_begin), tuple(coordinate_end), grid)
+                
+                # if search != False: 
+                #     for crd in search:
+                #         grid[crd] = False   
+                #     # print("MADDEEEEEEEEEEEEE", coordinate_begin, coordinate_end ,search)
+
+                #     gate_connections.update({connected_gate: search})
+                # else:
+                #     # print("CANT MAKE")
+                #     # print("NOTCOMPLETED: ", connected_gate, str(coordinate_begin), str(coordinate_end))
+                blocking_wires.append((connected_gate, manhatten_length))
+                # break
+           
+        
+        
+        if len(blocking_wires) != 0:
+            newnetlist = []
+            for blocking_wire in blocking_wires:
+                if blocking_wire in distances:
+                    distances.remove(blocking_wire)
+                    newnetlist.append(blocking_wire)
+            
+            random.shuffle(newnetlist)
+            for net in distances:
+                newnetlist.append(net)
+            distances = newnetlist
+
+            count = 1
+            
+            if len(gate_connections) > 39:
+                print("FINISHED TROUGH BREAK")
+                break
+            print("LENGTH: ",len(gate_connections))
+            print("BLOCKING WIRES: ", blocking_wires)
+            print()
+
+    ax = plot.make_grid(8, 16)
+    for gate_coordinate in gate_coordinates: 
+        # blocked.append(Astar.Node(gate_coordinate[0], gate_coordinate[1], gate_coordinate[2]).set_blocked())
+        plot.set_gate(gate_coordinate, ax)
+    print("WIRES: ",len(gate_connections))
+
+    length = 0
+    # Calculate total length of wires
+    for key in gate_connections:
+        wire = gate_connections[key]
+        length = length + len(wire)
+        
+    print("TOTAL LENGTH")
+    print(length)
+    
 
     end_time = time.time()
     print("TIME: ", end_time - start_time)
 
-    # allConnections = []
-    # colours = ['b','lightgreen','cyan','m','yellow','k', 'pink']
-    # colourcounter = 0
-    # for keys in gate_connections:
-    #     allConnections = gate_connections[keys]
-    #     print(len(allConnections))
-    #     allconnectionlist = []
-    #     for listconnection in allConnections: 
-    #         allconnectionlist.append(listconnection)
-    #     if colourcounter < 6:
-    #         colourcounter += 1
-    #     else: 
-    #         colourcounter = 0
+    allConnections = []
+    colours = ['b', 'darkblue', 'k', 'green', 'cyan','m','yellow','lightgreen', 'pink']
+    colourcounter = 0
+    for keys in gate_connections:
+        allConnections = gate_connections[keys]
+        # print(len(allConnections))
+        allconnectionlist = []
+        for listconnection in allConnections: 
+            allconnectionlist.append(listconnection)
+        if colourcounter < 6:
+            colourcounter += 1
+        else: 
+            colourcounter = 0
 
-    #     for i in range(len(allconnectionlist)):
-    #         try: 
-    #             plot.draw_line([allconnectionlist[i].x, allconnectionlist[i].y, allconnectionlist[i].z], [allconnectionlist[i + 1].x, allconnectionlist[i + 1].y, allconnectionlist[i + 1].z], colours[colourcounter], ax)
-    #         except: 
-    #             break 
-    
-    # plt.show()
+        for i in range(len(allconnectionlist)):
+            try: 
+                plot.draw_line(allconnectionlist[i], allconnectionlist[i + 1], colours[colourcounter], ax)
+            except: 
+                break 
+
+    plt.show()
