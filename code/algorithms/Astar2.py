@@ -19,6 +19,7 @@ def neighbours(current, grid, path):
         if neighbour not in path:
             if neighbour in grid:
                 if grid[neighbour]:
+                    # print(grid[neighbour])
                     neighbours.append(neighbour)
 
     return neighbours
@@ -27,7 +28,15 @@ def a_star(start, end, grid):
     pq = PriorityQueue()
 
     path = [start]
-    f = 0 + heuristic(start, end)
+    for i in range(8):
+        temp = list(start)
+        temp[2] = i
+        temp = tuple(temp)
+        if grid[temp]:
+            path.append(temp)
+        else:
+            break
+    f = 0 + heuristic(temp, end)
 
     visited = set()
 
@@ -46,33 +55,34 @@ def a_star(start, end, grid):
                 pq.put((f, new_path))
                 visited.add(i)
 
-        print(len(path))
+        # print(len(path))
 
     return False
 
 def make_grid():
     grid = {}
     for x in range(17):
-        for y in range(12):
+        for y in range(13):
             for z in range(8):
-                    grid[(x, y, z)] = True
+                grid[(x, y, z)] = True
+     
     return grid
 
-start_time = time.time()
-grid = make_grid()
+# start_time = time.time()
+# grid = make_grid()
 
 
-start = (1, 1, 0)
-end = (1, 5, 0)
-search = a_star(start, end, grid)
-for crd in search:
-    grid[crd] = False
-print(search)
+# start = (1, 1, 0)
+# end = (1, 5, 0)
+# search = a_star(start, end, grid)
+# for crd in search:
+#     grid[crd] = False
+# print(search)
 
 
-start = (0, 2, 0)
-end = (2, 4, 0)
-search = a_star(start, end, grid)
-print(search)
-end_time = time.time()
-print("time", end_time - start_time)
+# start = (0, 2, 0)
+# end = (2, 4, 0)
+# search = a_star(start, end, grid)
+# print(search)
+# end_time = time.time()
+# print("time", end_time - start_time) 
