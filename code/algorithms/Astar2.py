@@ -14,8 +14,6 @@ def neighbours(current, grid, path):
 
     for i in moves:
         neighbour = tuple(np.array(current) + np.array(i))
-        # print(type(neighbour))
-        # if neighbour not in set(path):
         if neighbour not in path:
             if neighbour in grid:
                 if grid[neighbour]:
@@ -25,9 +23,24 @@ def neighbours(current, grid, path):
 
 def a_star(start, end, grid):
     pq = PriorityQueue()
-
+    
     path = [start]
-    f = 0 + heuristic(start, end)
+    for i in range(8):
+        force_up = list(path[-1])
+        force_up[2] = i
+        force_up = tuple(force_up)
+        if grid[force_up]:
+            path.append(force_up)
+        else:
+            neighbour_list = neighbours(path[-1], grid, path)
+            if neighbour_list:
+                for neighbour in neighbour_list:
+                    path.append(neighbour)
+                    break
+            else:
+                break
+    
+    f = 0 + heuristic(force_up, end)
 
     visited = set()
 
@@ -37,7 +50,6 @@ def a_star(start, end, grid):
         path = pq.get()[1]
         current = path[-1]
         if current == end:
-            print("path", path)
             return path
 
         for i in neighbours(current, grid, path):
@@ -51,18 +63,16 @@ def a_star(start, end, grid):
 
     return False
 
-def make_grid(gate_connections):
+def make_grid():
     grid = {}
-    for x in range(17):
-        for y in range(12):
+    for x in range(-1, 5):
+        for y in range(-1, 5):
             for z in range(8):
-                if x == 1 and y < 5:
-                    grid[(x, y, z)] = False
-                else:
-                    grid[(x, y, z)] = True
+                grid[(x, y, z)] = True
+     
     return grid
 
-
+# start_time = time.time()
 # grid = make_grid()
 
 
@@ -78,3 +88,5 @@ def make_grid(gate_connections):
 # end = (2, 4, 0)
 # search = a_star(start, end, grid)
 # print(search)
+# end_time = time.time()
+# print("time", end_time - start_time) 
