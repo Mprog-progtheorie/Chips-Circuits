@@ -11,26 +11,26 @@ def delete_wire(coordinate_begin, itemnet, distances, gate_connections, allwires
     distances.append(((start_gate, end_gate), 2))
 
     coordinates = gate_connections[itemnet]
-
+    print("BEFOREDEL: ", len(allwires), len(blocked))
     # Delete wire from gate connections dictionary
     del gate_connections[itemnet]
    
     # Delete blocking wire
     for i in coordinates:
-        if i in blocked:
-            print("DELETETOM")
-            blocked.remove(i)
+        print("incoo: ", i, type(i))
+        if str(i) in blocked:
+            print("DELETEBLOCK", i)
+            blocked.remove(str(i))
     deletelist = []
     # Delete blocking wire
     for i, item2 in enumerate(allwires):
         if item2.net == itemnet:
-            print("DELETETOM")
+            # print("DELETETOM")
             # print(allwires[i])
             deletelist.append(allwires[i])
-
-    for delete_wire in deletelist:
-        print("REALDELETE")
+        # print("DELETINGTHIS: ", str(deletelist))
+    for delete_wire in deletelist:  
         allwires.remove(delete_wire)
-
+    print("AFTERDEL: ", len(allwires), len(blocked))
 
     return wires, x_coordinate_start, y_coordinate_start, z_coordinate_start, coordinate, gate_connections, allwires, blocked
