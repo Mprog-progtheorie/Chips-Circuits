@@ -6,6 +6,24 @@ def heuristic(current, goal):
     h = abs(np.array(current) - np.array(goal))
     return h.sum()
 
+def gate_neighbours(current, grid, path):
+    neighbours = list()
+    moves = list()
+    for x in range(-1, 2):
+        for y in range(-1, 2):
+            for z in range(8):
+                moves.append((x, y, z))
+
+    for i in moves:
+        neighbour = tuple(np.array(current) + np.array(i))
+        if neighbour not in path:
+            if neighbour in grid:
+                if grid.get(neighbour)[0]:
+                    neighbours.append(neighbour)
+
+    return neighbours
+
+
 def neighbours(current, grid, path):
     neighbours = list()
 
@@ -21,12 +39,12 @@ def neighbours(current, grid, path):
 
     return neighbours
 
-def a_star(start, end, grid):
+def a_star(start, end, grid, ceiling_count):
     pq = PriorityQueue()
     
     path = [start]
     if heuristic(start, end) < 5:
-        for i in range(8):
+        for i in range(ceiling_count):
             force_up = list(path[-1])
             force_up[2] = i
             force_up = tuple(force_up)
@@ -67,8 +85,8 @@ def a_star(start, end, grid):
 
 def make_grid():
     grid = {}
-    for x in range(17):
-        for y in range(12):
+    for x in range(18):
+        for y in range(17):
             for z in range(8):
                 g = 8 - z
                 grid[(x, y, z)] = [True, (g * 2)]
