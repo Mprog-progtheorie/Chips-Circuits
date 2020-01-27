@@ -61,20 +61,13 @@ if __name__ == '__main__':
 
         gate_connections = {}
 
-        
-        # string_gates = [] 
-
-
-       
-
-        
         grid = Astar.make_grid()
         temp_path = list()
         for gate_coo in gate_coordinates:
             grid[tuple(gate_coo)][0] = False
-            gate_neighbours = Astar.neighbours(tuple(gate_coo), grid, temp_path)
-            for neighbour in gate_neighbours:
-                grid.get(neighbour)[1] = 5
+            gate_neighbours_list = Astar.gate_neighbours(tuple(gate_coo), grid, temp_path)
+            for neighbour in gate_neighbours_list:
+                grid.get(neighbour)[1] += 20
 
         blocking_wires = []
         # random.shuffle(distances)
@@ -94,10 +87,14 @@ if __name__ == '__main__':
             
             search = Astar.a_star(tuple(coordinate_begin), tuple(coordinate_end), grid)
             # print("SEARCH: ",search, connected_gate) 
+                
             
             try:
                 for crd in search:
                     grid[crd][0] = False
+                    # crd_neighbours = Astar.neighbours(crd, grid, search)
+                    # for neighbour in crd_neighbours:
+                    #     grid.get(neighbour)[1] += 20
                 gate_connections.update({connected_gate: search})
             except:
                 blocking_wires.append((connected_gate, manhatten_length))

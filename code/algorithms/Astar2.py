@@ -6,6 +6,23 @@ def heuristic(current, goal):
     h = abs(np.array(current) - np.array(goal))
     return h.sum()
 
+def gate_neighbours(current, grid, path):
+    neighbours = list()
+    moves = list()
+    for x in range(-1, 2):
+        for y in range(-1, 2):
+            for z in range(2):
+                moves.append((x, y, z))
+
+    for i in moves:
+        neighbour = tuple(np.array(current) + np.array(i))
+        if neighbour not in path:
+            if neighbour in grid:
+                if grid.get(neighbour)[0]:
+                    neighbours.append(neighbour)
+
+    return neighbours
+
 def neighbours(current, grid, path):
     neighbours = list()
 
@@ -25,22 +42,27 @@ def a_star(start, end, grid):
     pq = PriorityQueue()
     
     path = [start]
-    for i in range(8):
-        force_up = list(path[-1])
-        force_up[2] = i
-        force_up = tuple(force_up)
-        if grid.get(force_up)[0]:
-            path.append(force_up)
-        else:
-            neighbour_list = neighbours(path[-1], grid, path)
-            if neighbour_list:
-                for neighbour in neighbour_list:
-                    path.append(neighbour)
-                    break
-            else:
-                break
+    # print(gate_neighbours(start, grid, path))
+    # input()
+
+
+    # if heuristic(start, end) < 5:
+    #     for i in range(8):
+    #         force_up = list(path[-1])
+    #         force_up[2] = i
+    #         force_up = tuple(force_up)
+    #         if grid.get(force_up)[0]:
+    #             path.append(force_up)
+    #         else:
+    #             neighbour_list = neighbours(path[-1], grid, path)
+    #             if neighbour_list:
+    #                 for neighbour in neighbour_list:
+    #                     path.append(neighbour)
+    #                     break
+    #             else:
+    #                 break
     
-    f = grid.get(force_up)[1] + heuristic(force_up, end)
+    f = grid.get(path[-1])[1] + heuristic(path[-1], end)
 
     visited = set()
 
@@ -60,8 +82,6 @@ def a_star(start, end, grid):
                 pq.put((f, new_path))
                 visited.add(i)
 
-        # print(len(path))
-
     return False
 
 def make_grid():
@@ -69,7 +89,8 @@ def make_grid():
     for x in range(-1, 5):
         for y in range(-1, 5):
             for z in range(8):
-                grid[(x, y, z)] = [True, 0]
+                g = 8 - z
+                grid[(x, y, z)] = [True, g]
      
     return grid
 
