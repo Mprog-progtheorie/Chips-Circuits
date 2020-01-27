@@ -75,7 +75,7 @@ if __name__ == '__main__':
         
         # string_gates = [] 
         
-        grid = Astar.make_grid()
+        grid = Astar.make_grid(gate_coordinates)
         temp_path = list()
         for gate_coo in gate_coordinates:
             grid[tuple(gate_coo)][0] = False
@@ -134,7 +134,7 @@ if __name__ == '__main__':
                 wires_length = wires_length + len(wire)
             
             print("RESULTSLEN: ", len(results))
-            if len(gate_connections) > 60:
+            if len(gate_connections) > 56:
                 print("Got out with break")
                 print("Wires of solution: ",len(gate_connections), wires_length)
                 print("BLOCKING WIRES: ", blocking_wires)

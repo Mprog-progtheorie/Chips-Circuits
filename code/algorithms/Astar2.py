@@ -79,35 +79,20 @@ def a_star(start, end, grid, ceiling_count):
                 pq.put((f, new_path))
                 visited.add(i)
 
-        # print(len(path))
 
     return False
 
-def make_grid():
+def make_grid(gates):
+    if len(gates) == 25:
+        y_range = 13
+    else:
+        y_range = 17
+
     grid = {}
     for x in range(18):
-        for y in range(17):
+        for y in range(y_range):
             for z in range(8):
                 g = 8 - z
                 grid[(x, y, z)] = [True, (g * 2)]
      
     return grid
-
-# start_time = time.time()
-# grid = make_grid()
-
-
-# start = (1, 1, 0)
-# end = (1, 5, 0)
-# search = a_star(start, end, grid)
-# for crd in search:
-#     grid[crd] = False
-# print(search)
-
-
-# start = (0, 2, 0)
-# end = (2, 4, 0)
-# search = a_star(start, end, grid)
-# print(search)
-# end_time = time.time()
-# print("time", end_time - start_time) 
