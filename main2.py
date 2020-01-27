@@ -53,7 +53,7 @@ if __name__ == '__main__':
         if not swapped:
             break
     
-    
+    results = {}
     count = 1
     
     while count == 1:
@@ -97,23 +97,7 @@ if __name__ == '__main__':
                     grid[crd] = False
                 gate_connections.update({connected_gate: search})
             except:
-                # # print(coordinate_begin)
-                # (grid, gate_connections, distances) = delete.delete_begin(coordinate_begin, grid, gate_connections, gate_start, distances)
-                # (grid, gate_connections, distances) = delete.delete_end(coordinate_begin, grid, gate_connections, gate_end, distances)
-
-                # search = Astar.a_star(tuple(coordinate_begin), tuple(coordinate_end), grid)
-                
-                # if search != False: 
-                #     for crd in search:
-                #         grid[crd] = False   
-                #     # print("MADDEEEEEEEEEEEEE", coordinate_begin, coordinate_end ,search)
-
-                #     gate_connections.update({connected_gate: search})
-                # else:
-                #     # print("CANT MAKE")
-                #     # print("NOTCOMPLETED: ", connected_gate, str(coordinate_begin), str(coordinate_end))
                 blocking_wires.append((connected_gate, manhatten_length))
-                # break
            
         
         
@@ -130,13 +114,22 @@ if __name__ == '__main__':
             distances = newnetlist
 
             count = 1
-            
-            if len(gate_connections) > 39:
-                print("FINISHED TROUGH BREAK")
+            wires_length = 0
+            # Calculate total length of wires
+            for key in gate_connections:
+                wire = gate_connections[key]
+                wires_length = wires_length + len(wire)
+            results.update({len(gate_connections)  : gate_connections})
+            print("RESULTSLEN: ", len(results))
+            if len(results) > 12:
+                print("Made 13 different solutions")
                 break
             print("LENGTH: ",len(gate_connections))
             print("BLOCKING WIRES: ", blocking_wires)
             print()
+            gate_connections = results[max(results, key=int)]
+        else: 
+            print("FINISHED NETLIST")
 
     ax = plot.make_grid(8, 16)
     for gate_coordinate in gate_coordinates: 
