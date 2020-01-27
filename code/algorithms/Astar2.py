@@ -29,14 +29,20 @@ def a_star(start, end, grid):
 
     path = [start]
     for i in range(8):
-        temp = list(start)
-        temp[2] = i
-        temp = tuple(temp)
-        if grid[temp]:
-            path.append(temp)
+        force_up = list(path[-1])
+        force_up[2] = i
+        force_up = tuple(force_up)
+        if grid[force_up]:
+            path.append(force_up)
         else:
-            break
-    f = 0 + heuristic(temp, end)
+            neighbour_list = neighbours(path[-1], grid, path)
+            if neighbour_list:
+                for neighbour in neighbour_list:
+                    path.append(neighbour)
+                    break
+            else:
+                break
+    f = 0 + heuristic(force_up, end)
 
     visited = set()
 
