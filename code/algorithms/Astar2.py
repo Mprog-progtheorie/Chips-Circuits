@@ -3,8 +3,8 @@ import numpy as np
 import time
 
 def heuristic(current, goal):
-    x = abs(np.array(current) - np.array(goal))
-    return x.sum()
+    h = abs(np.array(current) - np.array(goal))
+    return h.sum()
 
 def neighbours(current, grid, path):
     neighbours = list()
@@ -14,35 +14,34 @@ def neighbours(current, grid, path):
 
     for i in moves:
         neighbour = tuple(np.array(current) + np.array(i))
-        # print(type(neighbour))
-        # if neighbour not in set(path):
         if neighbour not in path:
             if neighbour in grid:
-                if grid[neighbour]:
-                    # print(grid[neighbour])
+                if grid.get(neighbour)[0]:
                     neighbours.append(neighbour)
 
     return neighbours
 
 def a_star(start, end, grid):
     pq = PriorityQueue()
-
+    
     path = [start]
-    for i in range(8):
-        force_up = list(path[-1])
-        force_up[2] = i
-        force_up = tuple(force_up)
-        if grid[force_up]:
-            path.append(force_up)
-        else:
-            neighbour_list = neighbours(path[-1], grid, path)
-            if neighbour_list:
-                for neighbour in neighbour_list:
-                    path.append(neighbour)
-                    break
+    if heuristic(start, end) < 5:
+        for i in range(8):
+            force_up = list(path[-1])
+            force_up[2] = i
+            force_up = tuple(force_up)
+            if grid.get(force_up)[0]:
+                path.append(force_up)
             else:
-                break
-    f = 0 + heuristic(force_up, end)
+                neighbour_list = neighbours(path[-1], grid, path)
+                if neighbour_list:
+                    for neighbour in neighbour_list:
+                        path.append(neighbour)
+                        break
+                else:
+                    break
+        
+    f = grid.get(path[-1])[1] + heuristic(path[-1], end)
 
     visited = set()
 
@@ -56,7 +55,8 @@ def a_star(start, end, grid):
 
         for i in neighbours(current, grid, path):
             new_path = path + [i]
-            f = len(new_path) + heuristic(i, end)
+            g = len(new_path) + grid.get(i)[1]
+            f = g + heuristic(i, end)
             if i not in visited:
                 pq.put((f, new_path))
                 visited.add(i)
@@ -68,9 +68,10 @@ def a_star(start, end, grid):
 def make_grid():
     grid = {}
     for x in range(17):
-        for y in range(13):
+        for y in range(12):
             for z in range(8):
-                grid[(x, y, z)] = True
+                g = 8 - z
+                grid[(x, y, z)] = [True, (g * 2)]
      
     return grid
 
