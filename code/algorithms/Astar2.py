@@ -103,7 +103,7 @@ def a_star_basic(start, end, grid):
             if i not in visited:
                 pq.put((f, new_path))
                 visited.add(i)
-
+ 
     return False
 
 def make_grid(gates):

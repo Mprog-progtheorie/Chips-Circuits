@@ -9,14 +9,29 @@ import csv
 import random
 import sys
 
+def main():
+    print("Welcome to our case Chips and Circuits! By De Mandarijntjes \n --------------------------")
+    net_option = input("Please enter a number from 1 to 6 to choose a netlist: ")
+    while True:
+        bool_input = input("Do you want to use the A star search algorithm? Y/N ")
+        if bool_input.capitalize() == "Y" or bool_input.capitalize() == "Yes":
+            break
+        else:
+            sys.exit()
+
+    return net_option
+
 if __name__ == '__main__':
+    net_option = main()
     start_time = time.time()
-    if len(sys.argv) < 3:
-        print("Usage: main.py netlist_x print_y; where x = 1 till 6 and where y = 1 or 2")
-        exit()
-    else: 
-        netliststring = "data/" + str(sys.argv[1]) + ".csv"
-        printstring = "data/" + str(sys.argv[2]) + ".csv" 
+
+    if int(net_option) <= 3:
+        netliststring = "data/" + "netlist_" + net_option + ".csv"
+        printstring = "data/" + "print_1" + ".csv"
+    elif int(net_option) <= 6:
+        netliststring = "data/" + "netlist_" + net_option + ".csv"
+        printstring = "data/" + "print_1" + ".csv"
+
    
     # Create netlist by loading file in class
     netlist = classs.Netlist(netliststring).netlist
@@ -49,9 +64,10 @@ if __name__ == '__main__':
         distances.update({connected_gate: total_dist})
 
     # Sort connections from smallest to largest distance in dictionary
-    print(distances.items())
+    # print(distances.items())
     distances = list(distances.items())
     
+    # HEURISTIC
     for max_number in range(len(distances)-1, -1, -1):
         swapped = False
         for count in range(max_number):
@@ -79,6 +95,8 @@ if __name__ == '__main__':
         temp_path = list()
         for gate_coo in gate_coordinates:
             grid[tuple(gate_coo)][0] = False
+
+            # HEURISTIC
             gate_neighbours_list = Astar.gate_neighbours(tuple(gate_coo), grid, temp_path)
             for neighbour in gate_neighbours_list:
                 grid.get(neighbour)[1] += 25
@@ -113,7 +131,10 @@ if __name__ == '__main__':
             except:
                 blocking_wires.append((connected_gate, manhatten_length))
                 # break
+
+        
            
+        #    HEURISTIC
         if len(blocking_wires) != 0:
             newnetlist = []
             for blocking_wire in blocking_wires:
@@ -148,6 +169,18 @@ if __name__ == '__main__':
         else: 
             results.update({len(gate_connections)  : (wires_length, gate_connections)})
             print("FINISHED NETLIST")
+
+            for gate_connection in gate_connections:
+                for crd in gate_connections[gate_connection]:
+                    grid[crd][0] = True
+                    
+                # print(gate_coordinates[(gate_connection[0] - 1)], gate_coordinates[(gate_connection[1] - 1)])
+                newpath = Astar.a_star_basic(tuple(gate_coordinates[(gate_connection[0] - 1)]), tuple(gate_coordinates[(gate_connection[1] - 1)]), grid)
+                input(newpath)
+
+
+
+
     gate_connections = results[max(results, key=int)][1]
     ax = plot.make_grid(8, 17)
     for gate_coordinate in gate_coordinates: 
