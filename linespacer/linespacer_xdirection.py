@@ -20,7 +20,7 @@ import csv
 netlist = classs.Netlist("../data/netlist_1.csv").netlist
 
 # Create list for gate coordinates
-gate_coordinates = classs.Gate_coordinate("../data/pritn_1.csv").gate_coordinates
+gate_coordinates = classs.Gate_coordinate("../data/print_1.csv").gate_coordinates
 
 # Create dictionary for gate connections with corresponding shortest distance
 distances = {}
