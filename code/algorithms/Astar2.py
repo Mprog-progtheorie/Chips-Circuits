@@ -3,12 +3,18 @@ import numpy as np
 import time
 
 def heuristic(current, goal):
-    """Calculate heuristic distance between the current node and end node."""
+    """
+    Calculate heuristic distance between the current node and end node.
+    """
+
     h = abs(np.array(current) - np.array(goal))
     return h.sum()
 
 def neighbour_add(neighbours, current, moves, grid, path):
-    """Add neighbours depending on different conditions"""
+    """
+    Add neighbours depending on different conditions
+    """
+
     for i in moves:
         neighbour = tuple(np.array(current) + np.array(i))
         if neighbour not in path:
@@ -18,8 +24,11 @@ def neighbour_add(neighbours, current, moves, grid, path):
     return neighbours
 
 def gate_neighbours(current, grid, path):
-    """Generate a heatmap for gates so that A star can avoid gates. This consists of all direct neighbours, 
-    diagonal neighbours, and every coordinate straight above the gate in question"""
+    """
+    Generate a heatmap for gates so that A star can avoid gates. This consists of all direct neighbours, 
+    diagonal neighbours, and every coordinate straight above the gate in question
+    """
+
     neighbours = list()
 
     # Generate all other coordinates around the gate that Astar should avoid
@@ -32,7 +41,10 @@ def gate_neighbours(current, grid, path):
     return neighbour_add(neighbours, current, moves, grid, path)
 
 def neighbours(current, grid, path):
-    """Generate all direct legal(traversable) neighbours for the current node"""
+    """
+    Generate all direct legal(traversable) neighbours for the current node
+    """
+
     neighbours = list()
 
     # All direct moves in a list
@@ -46,7 +58,9 @@ def finished_check(current, end):
     return False
 
 def a_star(start, end, grid, ceiling_count):
-    """A star search function: It takes a start node, end node, grid, and a ceiling_count"""
+    """
+    A star search function: It takes a start node, end node, grid, and a ceiling_count
+    """
 
     # Initialize the priority queue
     pq = PriorityQueue()
@@ -141,7 +155,10 @@ def a_star(start, end, grid, ceiling_count):
     return False
 
 def a_star_basic(start, end, grid):
-    """A basic version of the A star algorithm without any added heuristics"""
+    """
+    A basic version of the A star algorithm without any added heuristics
+    """
+
     pq = PriorityQueue()
     path = [start]
     f = 0 + heuristic(path[-1], end)
@@ -168,8 +185,10 @@ def a_star_basic(start, end, grid):
 
 
 def make_grid(gates):
-    """Generate a grid that can be used my the A star search algorithm. It has an added heuristic function
-        causing A star to avoid lower layers.""" 
+    """
+    Generate a grid that can be used my the A star search algorithm. It has an added heuristic function
+    causing A star to avoid lower layers.
+    """ 
 
     # Change grid size based on the netlist
     if len(gates) == 25:

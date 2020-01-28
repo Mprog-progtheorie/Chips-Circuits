@@ -1,6 +1,5 @@
 from code.visualisation import plot as plot
-from code.classes import classes as classs
-from code.functions import DeleteNew as delete                     
+from code.classes import classes as classs                 
 from code.algorithms import Astar2 as Astar
 import copy
 import matplotlib.pyplot as plt
@@ -10,19 +9,29 @@ import random
 import sys
 
 def main():
-    print("Welcome to our case Chips and Circuits! By De Mandarijntjes \n --------------------------")
+    """
+    Greet the user with a CLI
+    """
+    # Set high so can never break a solvable algorithm if not entered
+    number_of_solutions = 1000
+    print("Welcome to our case Chips and Circuits! By De Mandarijntjes \n ---------------------------------------------------")
     net_option = input("Please enter a number from 1 to 6 to choose a netlist: ")
+    if int(net_option) > 2: 
+        number_of_solutions = input("You have entered a netlist that this algorithm cannot solve please enter the max number of different solutions you want to give the algorithm: ")
+    
     while True:
-        bool_input = input("Do you want to use the A star search algorithm? Y/N ")
+        bool_input = input("Do you want to use the hill climber over the end result algorithm? Y/N ")
         if bool_input.capitalize() == "Y" or bool_input.capitalize() == "Yes":
+            hill_climb_bool = True
             break
         else:
-            sys.exit()
+            hill_climb_bool = False
+            break
 
-    return net_option
+    return net_option, number_of_solutions, hill_climb_bool
 
 if __name__ == '__main__':
-    net_option = main()
+    net_option, number_of_solutions, hill_climb_bool = main()
     start_time = time.time()
 
     if int(net_option) <= 3:
@@ -30,8 +39,7 @@ if __name__ == '__main__':
         printstring = "data/" + "print_1" + ".csv"
     elif int(net_option) <= 6:
         netliststring = "data/" + "netlist_" + net_option + ".csv"
-        printstring = "data/" + "print_1" + ".csv"
-
+        printstring = "data/" + "print_2" + ".csv"
    
     # Create netlist by loading file in class
     netlist = classs.Netlist(netliststring).netlist
@@ -64,7 +72,7 @@ if __name__ == '__main__':
         distances.update({connected_gate: total_dist})
 
     # Sort connections from smallest to largest distance in dictionary
-    # print(distances.items())
+    print(distances.items())
     distances = list(distances.items())
     
     # HEURISTIC
@@ -155,14 +163,10 @@ if __name__ == '__main__':
                 wires_length = wires_length + len(wire)
             
             print("RESULTSLEN: ", len(results))
-            if len(gate_connections) > 56:
-                print("Got out with break")
-                print("Wires of solution: ",len(gate_connections), wires_length)
-                print("BLOCKING WIRES: ", blocking_wires)
-                print()
+            if len(results) >= int(number_of_solutions):
                 results.update({len(gate_connections)  : (wires_length, gate_connections)})
                 break
-            print("Wires of solution: ",len(gate_connections), wires_length)
+            print("Wires of solution: ",len(gate_connections), "Length:", wires_length)
             print("BLOCKING WIRES: ", blocking_wires)
             print()
             results.update({len(gate_connections)  : (wires_length, gate_connections)})
@@ -170,16 +174,29 @@ if __name__ == '__main__':
             results.update({len(gate_connections)  : (wires_length, gate_connections)})
             print("FINISHED NETLIST")
 
-            for gate_connection in gate_connections:
-                for crd in gate_connections[gate_connection]:
-                    grid[crd][0] = True
-                    
-                # print(gate_coordinates[(gate_connection[0] - 1)], gate_coordinates[(gate_connection[1] - 1)])
-                newpath = Astar.a_star_basic(tuple(gate_coordinates[(gate_connection[0] - 1)]), tuple(gate_coordinates[(gate_connection[1] - 1)]), grid)
-                input(newpath)
 
-
-
+    if hill_climb_bool:
+        new_wires_list = []
+        for gate_connection in gate_connections:
+            wire = gate_connections[gate_connection]
+            original_wirelength = len(wire)
+            for crd in wire:
+                grid[crd][0] = True
+            
+            newpath = Astar.a_star_basic(tuple(gate_coordinates[(gate_connection[0] - 1)]), tuple(gate_coordinates[(gate_connection[1] - 1)]), grid)
+            if newpath:
+                if len(newpath) < len(wire):
+                    # print("YES ERRASE")
+                    new_wires_list.append((gate_connection, newpath))
+                    for crd in newpath:
+                        grid[crd][0] = False
+                else: 
+                    for crd in wire:
+                        grid[crd][0] = False
+        print("number of reroutes for better solution", len(new_wires_list))
+        for new_wire in new_wires_list:
+            del gate_connections[new_wire[0]]
+            gate_connections.update({new_wire[0] : new_wire[1]})
 
     gate_connections = results[max(results, key=int)][1]
     ax = plot.make_grid(8, 17)
@@ -206,7 +223,6 @@ if __name__ == '__main__':
     colourcounter = 0
     for keys in gate_connections:
         allConnections = gate_connections[keys]
-        # print(len(allConnections))
         allconnectionlist = []
         for listconnection in allConnections: 
             allconnectionlist.append(listconnection)
@@ -223,3 +239,9 @@ if __name__ == '__main__':
     
 
     plt.show()
+    
+    with open('output/Astar_output.csv', mode= 'w') as outputfile:
+        output_writer = csv.writer(outputfile, delimiter= ',')
+
+        for keys in gate_connections:
+            output_writer.writerow([keys, gate_connections[keys]])
