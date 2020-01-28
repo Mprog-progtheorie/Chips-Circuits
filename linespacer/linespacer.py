@@ -15,7 +15,6 @@ from classes import classes as classs
 from functions import delete as delete
 from functions import change_coordinates as change
 import copy
-
 import csv
 
 # Create netlist by loading file in class
@@ -54,9 +53,9 @@ for item in netlist:
 distances = list(distances.items())
 for max_number in range(len(distances)-1, -1, -1):
     swapped = False
-    for count in range(max_number):
-        if distances[count][1] > distances[count + 1][1]:
-            distances[count], distances[count + 1] = distances[count + 1], distances[count]
+    for index in range(max_number):
+        if distances[index][1] > distances[index + 1][1]:
+            distances[index], distances[index + 1] = distances[index + 1], distances[index]
             swapped = True
     if not swapped:
         break
@@ -64,6 +63,7 @@ for max_number in range(len(distances)-1, -1, -1):
 # Create dictionary of wires with connected gates
 gate_connections = {}
 
+# Variable that counts connected gates
 count = 0
 
 # Saves all wires
@@ -74,6 +74,18 @@ minus_num_wires = 0
 
 # Define number for maximal number of layers
 max_num_layers = 7
+
+# Define number of new wires that are still created in same direction
+num_newwires = 5
+
+# Define minimum number of wires length for which wire can be checked on double coordinates
+minimum_wireslength = 4
+
+# Define number for which wire can be deleted and thus is too long
+deleting_length = 75
+
+# Define number for maximum length of wire
+max_wirelength = 100
 
 # Connect gates with eachother, starting with smallest distance
 for chips in distances:
@@ -109,34 +121,35 @@ for chips in distances:
     z_coordinate_startcheck = z_coordinate_start + 1
     coordinate_5 = [x_coordinate_start, y_coordinate_start, z_coordinate_startcheck]
     
-    # Saves all coordinates around current start coordinate in list
+    # Save all coordinates around current start coordinate in list
     coordinate_check = [coordinate_1, coordinate_2, coordinate_3, coordinate_4, coordinate_5]
     
     # Creates list for all coordinates that are already occupied
     all_coordinates = []
-    for coo in allwires:
-        all_coordinates.append(coo.get_coordinate())
+    for coordnt in allwires:
+        all_coordinates.append(coordnt.get_coordinate())
 
     # Checks whether wire can move in any direction, if at least one coordinate around current coordinate is free
     if all(elem in all_coordinates for elem in coordinate_check):
         for coor in coordinate_check:
             for item_start in allwires:
                 if item_start.coordinate == coor and item_start.net[0] != gate_start and item_start.net[1] != gate_start:
+                    # Delete one wire around start gate that has no connection with start gate if all surrounded coordinates are occupied
                     (wires, x_coordinate_start, y_coordinate_start, z_coordinate_start, coordinate, gate_connections, allwires) = delete.delete_wire(wires, coordinate_begin, item_start.net, distances, gate_connections, allwires)
                     break
     
     # Create switch variable to switch start moving direction
-    if count > len(netlist)+5:
+    if count > len(netlist) + num_newwires:
         # Reconnect deleted wires in switched direction
         switch_variable = 1
     else:
         switch_variable = 0
     
-    # Overwrite coordinate but save coordinate_begin in different variable        
+    # Overwrite coordinate but save coordinate_begin in different variable
     coordinate = coordinate_begin
     
-    checker = 0
-    notcomplete = 0
+    # Checks whether wire is created too often and will probably never connect
+    connection_checker = 0
     
     while coordinate != coordinate_end:
         # Determine direction in which wire has to move
@@ -158,6 +171,7 @@ for chips in distances:
         if switch_variable == 0:
             # Loop until x-coordinate from start gate equals x-coordinate from end gate
             while x_coordinate_start != x_coordinate_end:
+                # Redefine coordinate by moving in different directions and check whether coordinate is available
                 x_coordinate_start = x_coordinate_start + step_x
                 coordinate = [x_coordinate_start, y_coordinate_start, z_coordinate_start]
                 # Check for other gates or other wires
@@ -172,9 +186,7 @@ for chips in distances:
                     (y_coordinate_start, x_coordinate_start) = change.change_coor(gate_connections, coordinate, gate_coordinates, wires, coordinate_end, y_coordinate_start, step_y, x_coordinate_start, -step_x)
                 elif coordinate in gate_coordinates and coordinate != coordinate_end:
                     x_coordinate_start = x_coordinate_start - step_x
-                    # z kan nu niet meerdere stappen omhoog/omlaag
                     z_coordinate_start = z_coordinate_start + 1
-                    #checken of na deze stap geen gate zit
                     coordinate = [x_coordinate_start, y_coordinate_start, z_coordinate_start]
                     (z_coordinate_start, x_coordinate_start) = change.change_coor2(coordinate, wires, gate_coordinates, coordinate_end, z_coordinate_start, -1, x_coordinate_start, -step_x)
                     coordinate = [x_coordinate_start, y_coordinate_start, z_coordinate_start]
@@ -197,6 +209,7 @@ for chips in distances:
             # Change z-coordinate if x- and y-coordinates are same as those from end gate        
             if x_coordinate_start == x_coordinate_end and y_coordinate_start == y_coordinate_end:
                 while z_coordinate_start != z_coordinate_end:
+                    # Redefine coordinate by moving in different directions and check whether coordinate is available
                     z_coordinate_start = z_coordinate_start - 1
                     coordinate = [x_coordinate_start, y_coordinate_start, z_coordinate_start]
                     if gate_connections:
@@ -230,6 +243,7 @@ for chips in distances:
         
         # Loop until y-coordinate from start gate equals y-coordinate from end gate
         while y_coordinate_start != y_coordinate_end:
+            # Redefine coordinate by moving in different directions and check whether coordinate is available
            y_coordinate_start = y_coordinate_start + step_y
            coordinate = [x_coordinate_start, y_coordinate_start, z_coordinate_start]
            # Check for other gates or other wires
@@ -272,6 +286,7 @@ for chips in distances:
            # Change z-coordinate if x- and y-coordinates are same as those from end gate
            if x_coordinate_start == x_coordinate_end and y_coordinate_start == y_coordinate_end:
                while z_coordinate_start != z_coordinate_end:
+                   # Redefine coordinate by moving in different directions and check whether coordinate is available
                    z_coordinate_start = z_coordinate_start - 1
                    coordinate = [x_coordinate_start, y_coordinate_start, z_coordinate_start]
                    if gate_connections:
@@ -298,7 +313,9 @@ for chips in distances:
                    allwires.append(wire)
                    
         # Check whether wire isn't running into forever loop
-        if len(wires) > 100:
+        if len(wires) > max_wirelength:
+            # Delete one wire around end gate or delete one wire that is too long
+            # Check every wire around end gate by redefining check_coordinate
             x_coordinate_check = x_coordinate_end + step_x
             check_coordinate = [x_coordinate_check, y_coordinate_end, z_coordinate_end]
             for item in allwires:
@@ -308,7 +325,7 @@ for chips in distances:
                 else:
                     copy_gate_connections = copy.deepcopy(gate_connections)
                     for key in copy_gate_connections:
-                        if len(copy_gate_connections[key]) > 75:
+                        if len(copy_gate_connections[key]) > deleting_length:
                             (wires, x_coordinate_start, y_coordinate_start, z_coordinate_start, coordinate, gate_connections, allwires) = delete.delete_wire(wires, coordinate_begin, item.net, distances, gate_connections, allwires)
                 break            
             x_coordinate_check = x_coordinate_end - step_x
@@ -320,7 +337,7 @@ for chips in distances:
                 else:
                     copy_gate_connections = copy.deepcopy(gate_connections)
                     for key in copy_gate_connections:
-                        if len(copy_gate_connections[key]) > 75:
+                        if len(copy_gate_connections[key]) > deleting_length:
                             (wires, x_coordinate_start, y_coordinate_start, z_coordinate_start, coordinate, gate_connections, allwires) = delete.delete_wire(wires, coordinate_begin, item.net, distances, gate_connections, allwires)
                 break
             y_coordinate_check = y_coordinate_end + step_y
@@ -332,7 +349,7 @@ for chips in distances:
                 else:
                     copy_gate_connections = copy.deepcopy(gate_connections)
                     for key in copy_gate_connections:
-                        if len(copy_gate_connections[key]) > 75:
+                        if len(copy_gate_connections[key]) > deleting_length:
                             (wires, x_coordinate_start, y_coordinate_start, z_coordinate_start, coordinate, gate_connections, allwires) = delete.delete_wire(wires, coordinate_begin, item.net, distances, gate_connections, allwires)
                 break
             y_coordinate_check = y_coordinate_end - step_y
@@ -344,7 +361,7 @@ for chips in distances:
                 else:
                     copy_gate_connections = copy.deepcopy(gate_connections)
                     for key in copy_gate_connections:
-                        if len(copy_gate_connections[key]) > 75:
+                        if len(copy_gate_connections[key]) > deleting_length:
                             (wires, x_coordinate_start, y_coordinate_start, z_coordinate_start, coordinate, gate_connections, allwires) = delete.delete_wire(wires, coordinate_begin, key, distances, gate_connections, allwires)
                 break
             z_coordinate_check = z_coordinate_end + 1
@@ -356,7 +373,7 @@ for chips in distances:
                 else:
                     copy_gate_connections = copy.deepcopy(gate_connections)
                     for key in copy_gate_connections:
-                        if len(copy_gate_connections[key]) > 75:
+                        if len(copy_gate_connections[key]) > deleting_length:
                             (wires, x_coordinate_start, y_coordinate_start, z_coordinate_start, coordinate, gate_connections, allwires) = delete.delete_wire(wires, coordinate_begin, key, distances, gate_connections, allwires)
                 break
                     
@@ -366,21 +383,20 @@ for chips in distances:
             y_coordinate_start = int(coordinate_begin[1])
             z_coordinate_start = int(coordinate_begin[2])
             coordinate = coordinate_begin
-            # Check y-coordinate first, then x-coordinate
             # Change value of switch variable to start moving in other direction
             switch_variable = 1
         else: 
-            checker += 1
-        if checker > 200: 
-            notcomplete += 1
-            break
-               
-    count += 1         
+            connection_checker += 1
+        if connection_checker > 200:
+            break        
+    
+    # New connection is created           
+    count += 1
     
     wires_length = len(wires)
     
     # Delete part of wire when wire goes back and forth on one line
-    if wires_length > 4:
+    if wires_length > minimum_wireslength:
         indices = []
         for count in range(wires_length-2):
             coor_1 = wires[count]
@@ -410,19 +426,20 @@ for chips in distances:
             end_gate = int(net.gate_2)
             
             if (start_gate, end_gate) in gate_connections.keys():
-                uu = gate_connections[(start_gate, end_gate)]
+                select_conn = gate_connections[(start_gate, end_gate)]
                 gate_net = (start_gate, end_gate)
                 new_net = (end_gate, start_gate)
                 end_coordinate = gate_coordinates[end_gate - 1]
             elif (end_gate, start_gate) in gate_connections.keys():
-                uu = gate_connections[(end_gate, start_gate)]
+                select_conn = gate_connections[(end_gate, start_gate)]
                 gate_net = (end_gate, start_gate)
                 new_net = (start_gate, end_gate)
                 end_coordinate = gate_coordinates[start_gate - 1]
             else:
-                uu = "Key already deleted"
-
-            if uu != "Key already deleted" and end_coordinate not in uu:
+                select_conn = "Key already deleted"
+            
+            # Delete wire if wire doesn't reach end gate
+            if select_conn != "Key already deleted" and end_coordinate not in select_conn:
                 del gate_connections[gate_net]
             
                 distances.append((new_net, 2))
@@ -444,7 +461,7 @@ for chips in distances:
                     del gate_connections[delete_gate]
 
                     deletewire = []
-                    # Delete blocking wire
+                    # Delete wire from allwires list
                     for i, item2 in enumerate(allwires):
                         if item2.net == gate_net or item2.net == delete_gate:
                             deletewire.append(allwires[i])
@@ -455,9 +472,9 @@ for chips in distances:
         # Delete wires that are not within the grid
         connections_list = list(gate_connections.items())
                  
-        for index in connections_list:
-            wire = index[1]
-            gatenet = index[0]
+        for conn_index in connections_list:
+            wire = conn_index[1]
+            gatenet = conn_index[0]
             for coord in wire:
                 x_coor = coord[0]
                 y_coor = coord[1]
@@ -488,9 +505,9 @@ for chips in distances:
         # Delete wires that are not within the grid
         connections_list = list(gate_connections.items())
                  
-        for index in connections_list:
-            wire = index[1]
-            gatenet = index[0]
+        for connection_index in connections_list:
+            wire = connection_index[1]
+            gatenet = connection_index[0]
             for coord in wire:
                 x_coor = coord[0]
                 y_coor = coord[1]
@@ -529,8 +546,6 @@ def make_grid(layers, size):
         GridY = np.linspace(0, size, (size + 1))
         X, Y = np.meshgrid(GridX, GridY)
         Z = (np.sin(np.sqrt(X ** 2 + Y ** 2)) * 0) + i
-        # Plot grid
-        # ax.plot_wireframe(X, Y, Z, lw=0.5,  color='grey')
     #configure axes
     ax.set_zlim3d(0, layers)
     ax.set_xlim3d(0, size)
@@ -556,7 +571,6 @@ fig = plt.figure()
 ax = plt.axes(projection="3d")
 
 make_grid(8, 16)
-# plt.pause(3)
 for gate_coordinate in gate_coordinates: 
     set_gate(gate_coordinate)
     plt.pause(0.03)

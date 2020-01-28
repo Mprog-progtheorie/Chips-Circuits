@@ -16,7 +16,7 @@ def Make_Wire(input_direction, coordinate_start, coordinate_end, step_x, step_y,
         otherdirection_coordinate_start = coordinate_start[1]
         otherdirection_coordinate_end = coordinate_end[1]
 
-    elif input_direction = 'Y': 
+    elif input_direction == 'Y': 
         direction_coordinate_start = coordinate_start[1]
         direction_coordinate_end = coordinate_end[1]
         otherdirection_coordinate_start = coordinate_start[0]
