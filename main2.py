@@ -7,14 +7,22 @@ import matplotlib.pyplot as plt
 import time
 import csv
 import random
+import sys
 
 if __name__ == '__main__':
     start_time = time.time()
+    if len(sys.argv) < 3:
+        print("Usage: main.py netlist_x print_y; where x = 1 till 6 and where y = 1 or 2")
+        exit()
+    else: 
+        netliststring = "data/" + str(sys.argv[1]) + ".csv"
+        printstring = "data/" + str(sys.argv[2]) + ".csv" 
+   
     # Create netlist by loading file in class
-    netlist = classs.Netlist("data/netlist_2.csv").netlist
+    netlist = classs.Netlist(netliststring).netlist
 
     # Create list for gate coordinates
-    gate_coordinates = classs.Gate_coordinate("data/pritn_1.csv").gate_coordinates
+    gate_coordinates = classs.Gate_coordinate(printstring).gate_coordinates
 
     
     distances = {}
@@ -44,6 +52,7 @@ if __name__ == '__main__':
     print(distances.items())
     distances = list(distances.items())
     
+    # HEURISTIC
     for max_number in range(len(distances)-1, -1, -1):
         swapped = False
         for count in range(max_number):
@@ -53,9 +62,12 @@ if __name__ == '__main__':
         if not swapped:
             break
     
-    results = {}
-    count = 1
     
+    count = 1
+
+    ceiling_counter = 2
+
+    results = {}
     while count == 1:
         count = 0
 
@@ -63,17 +75,18 @@ if __name__ == '__main__':
 
         
         # string_gates = [] 
-
-
-       
-
         
-        grid = Astar.make_grid()
+        grid = Astar.make_grid(gate_coordinates)
+        temp_path = list()
         for gate_coo in gate_coordinates:
-            grid[tuple(gate_coo)] = False
+            grid[tuple(gate_coo)][0] = False
+
+            # HEURISTIC
+            gate_neighbours_list = Astar.gate_neighbours(tuple(gate_coo), grid, temp_path)
+            for neighbour in gate_neighbours_list:
+                grid.get(neighbour)[1] += 25
 
         blocking_wires = []
-        print("DIS: ",distances)
         # random.shuffle(distances)
         for chips in distances:
             gate_start = int(chips[0][0])
@@ -86,21 +99,27 @@ if __name__ == '__main__':
             coordinate_begin = gate_coordinates[gate_start - 1]
             coordinate_end = gate_coordinates[gate_end - 1]
 
-            grid[tuple(coordinate_begin)] = True
-            grid[tuple(coordinate_end)] = True
+            grid[tuple(coordinate_begin)][0] = True
+            grid[tuple(coordinate_end)][0] = True
             
-            search = Astar.a_star(tuple(coordinate_begin), tuple(coordinate_end), grid)
+            search = Astar.a_star(tuple(coordinate_begin), tuple(coordinate_end), grid, ceiling_counter)
+            ceiling_counter += 1
+
+            if ceiling_counter == 8:
+                ceiling_counter = 2
             # print("SEARCH: ",search, connected_gate) 
             
             try:
                 for crd in search:
-                    grid[crd] = False
+                    grid[crd][0] = False
                 gate_connections.update({connected_gate: search})
             except:
                 blocking_wires.append((connected_gate, manhatten_length))
+                # break
+
+        
            
-        
-        
+        #    HEURISTIC
         if len(blocking_wires) != 0:
             newnetlist = []
             for blocking_wire in blocking_wires:
@@ -108,7 +127,7 @@ if __name__ == '__main__':
                     distances.remove(blocking_wire)
                     newnetlist.append(blocking_wire)
             
-            random.shuffle(newnetlist)
+            # random.shuffle(newnetlist)
             for net in distances:
                 newnetlist.append(net)
             distances = newnetlist
@@ -119,19 +138,54 @@ if __name__ == '__main__':
             for key in gate_connections:
                 wire = gate_connections[key]
                 wires_length = wires_length + len(wire)
-            results.update({len(gate_connections)  : gate_connections})
+            
             print("RESULTSLEN: ", len(results))
-            if len(results) > 12:
-                print("Made 13 different solutions")
-                break
-            print("LENGTH: ",len(gate_connections))
+            # if len(gate_connections) > 56:
+            #     print("Got out with break")
+            #     print("Wires of solution: ",len(gate_connections), wires_length)
+            #     print("BLOCKING WIRES: ", blocking_wires)
+            #     print()
+            #     results.update({len(gate_connections)  : (wires_length, gate_connections)})
+            #     break
+            print("Wires of solution: ",len(gate_connections), wires_length)
             print("BLOCKING WIRES: ", blocking_wires)
             print()
-            gate_connections = results[max(results, key=int)]
+            results.update({len(gate_connections)  : (wires_length, gate_connections)})
         else: 
+            results.update({len(gate_connections)  : (wires_length, gate_connections)})
             print("FINISHED NETLIST")
 
-    ax = plot.make_grid(8, 16)
+
+            # Little hill climber
+            new_wires_list = []
+            for gate_connection in gate_connections:
+                wire = gate_connections[gate_connection]
+                original_wirelength = len(wire)
+                for crd in wire:
+                    grid[crd][0] = True
+                # print(gate_connection[0], gate_connection[1])
+                # print(tuple(gate_coordinates[(gate_connection[0] - 1)]), tuple(gate_coordinates[(gate_connection[1] - 1)]))
+                newpath = Astar.a_star_basic(tuple(gate_coordinates[(gate_connection[0] - 1)]), tuple(gate_coordinates[(gate_connection[1] - 1)]), grid)
+                if newpath:
+                    print(len(wire), len(newpath))
+                    if len(newpath) < len(wire):
+                        # print("YES ERRASE")
+                        new_wires_list.append((gate_connection, newpath))
+                        for crd in newpath:
+                            grid[crd][0] = False
+                    else: 
+                        for crd in wire:
+                            grid[crd][0] = False
+            print("number of reroutes for better solution", len(new_wires_list))
+            for new_wire in new_wires_list:
+                del gate_connections[new_wire[0]]
+                gate_connections.update({new_wire[0] : new_wire[1]})
+
+
+
+
+    gate_connections = results[max(results, key=int)][1]
+    ax = plot.make_grid(8, 17)
     for gate_coordinate in gate_coordinates: 
         # blocked.append(Astar.Node(gate_coordinate[0], gate_coordinate[1], gate_coordinate[2]).set_blocked())
         plot.set_gate(gate_coordinate, ax)
@@ -169,5 +223,12 @@ if __name__ == '__main__':
                 plot.draw_line(allconnectionlist[i], allconnectionlist[i + 1], colours[colourcounter], ax)
             except: 
                 break 
+    
 
     plt.show()
+    
+    with open('Astar_output.csv', mode= 'w') as outputfile:
+        output_writer = csv.writer(outputfile, delimiter= ',')
+
+        for keys in gate_connections:
+            output_writer.writerow([keys, gate_connections[keys]])

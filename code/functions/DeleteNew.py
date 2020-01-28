@@ -87,3 +87,9 @@ def delete_end(coordinate_end, grid, gate_connections, gate_end, distances):
 
         # print("AFTER: ", len(gate_connections))
     return grid, gate_connections, distances
+
+def delete_wire(grid, gate_connections, gate_connection):
+    for crd in gate_connections[gate_connection]:
+        grid[crd] = True
+    # del gate_connections[gate_connection]
+    return grid, gate_connections

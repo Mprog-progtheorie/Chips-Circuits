@@ -23,6 +23,10 @@ def make_grid(layers, size):
     ax.set_zlim3d(0, layers)
     ax.set_xlim3d(-1, size)
     ax.set_ylim3d(-1, size)
+    
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_zlabel('z')
 
     return ax
 
