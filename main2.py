@@ -140,13 +140,13 @@ if __name__ == '__main__':
                 wires_length = wires_length + len(wire)
             
             print("RESULTSLEN: ", len(results))
-            if len(gate_connections) > 56:
-                print("Got out with break")
-                print("Wires of solution: ",len(gate_connections), wires_length)
-                print("BLOCKING WIRES: ", blocking_wires)
-                print()
-                results.update({len(gate_connections)  : (wires_length, gate_connections)})
-                break
+            # if len(gate_connections) > 56:
+            #     print("Got out with break")
+            #     print("Wires of solution: ",len(gate_connections), wires_length)
+            #     print("BLOCKING WIRES: ", blocking_wires)
+            #     print()
+            #     results.update({len(gate_connections)  : (wires_length, gate_connections)})
+            #     break
             print("Wires of solution: ",len(gate_connections), wires_length)
             print("BLOCKING WIRES: ", blocking_wires)
             print()
@@ -155,13 +155,31 @@ if __name__ == '__main__':
             results.update({len(gate_connections)  : (wires_length, gate_connections)})
             print("FINISHED NETLIST")
 
+
+            # Little hill climber
+            new_wires_list = []
             for gate_connection in gate_connections:
-                for crd in gate_connections[gate_connection]:
-                    grid[crd] = True
-                    
-                # print(gate_coordinates[(gate_connection[0] - 1)], gate_coordinates[(gate_connection[1] - 1)])
+                wire = gate_connections[gate_connection]
+                original_wirelength = len(wire)
+                for crd in wire:
+                    grid[crd][0] = True
+                # print(gate_connection[0], gate_connection[1])
+                # print(tuple(gate_coordinates[(gate_connection[0] - 1)]), tuple(gate_coordinates[(gate_connection[1] - 1)]))
                 newpath = Astar.a_star_basic(tuple(gate_coordinates[(gate_connection[0] - 1)]), tuple(gate_coordinates[(gate_connection[1] - 1)]), grid)
-                # print(newpath)
+                if newpath:
+                    print(len(wire), len(newpath))
+                    if len(newpath) < len(wire):
+                        # print("YES ERRASE")
+                        new_wires_list.append((gate_connection, newpath))
+                        for crd in newpath:
+                            grid[crd][0] = False
+                    else: 
+                        for crd in wire:
+                            grid[crd][0] = False
+            print("number of reroutes for better solution", len(new_wires_list))
+            for new_wire in new_wires_list:
+                del gate_connections[new_wire[0]]
+                gate_connections.update({new_wire[0] : new_wire[1]})
 
 
 
@@ -208,3 +226,9 @@ if __name__ == '__main__':
     
 
     plt.show()
+    
+    with open('Astar_output.csv', mode= 'w') as outputfile:
+        output_writer = csv.writer(outputfile, delimiter= ',')
+
+        for keys in gate_connections:
+            output_writer.writerow([keys, gate_connections[keys]])

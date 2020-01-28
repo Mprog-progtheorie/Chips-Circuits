@@ -44,40 +44,79 @@ def neighbours(current, grid, path):
 
 def a_star(start, end, grid, ceiling_count):
     pq = PriorityQueue()
-    # print("START1", type(start))
+
     path = [start]
-    # print("JOE3", grid.get(path[-1])[1])
-    # HEURISTIC
-    if heuristic(start, end) > 5:
-        for i in range(ceiling_count):
-            force_up = list(path[-1])
-            force_up[2] = i
-            force_up = tuple(force_up)
-            if grid.get(force_up)[0]:
-                path.append(force_up)
-            else:
-                neighbour_list = neighbours(path[-1], grid, path)
-                if neighbour_list:
-                    for neighbour in neighbour_list:
-                        path.append(neighbour)
-                        break
-                else:
-                    break
-
-    # print("joe4", grid.get(path[-1][1]))
-    f = grid.get(path[-1])[1] + heuristic(path[-1], end)
-
+    
     visited = set()
 
-    pq.put((f, path))
+    test_bool = False
+    test_count = 0
+    test_old = None
 
+    check_difference = 0
+
+    # HEURISTIC
+    # if heuristic(start, end) > 5:
+    #     for i in range(ceiling_count):
+    #         force_up = list(path[-1])
+    #         # print("1", force_up)
+
+    #         if test_bool:
+    #             force_up[2] = test_count
+    #             test_bool = False
+    #         else:
+    #             test_count += 1
+    #             force_up[2] = test_count
+    #         force_up = tuple(force_up)
+    #         if test_old != None:
+    #             print("old", test_old, force_up)
+    #             check_difference = force_up[2] - test_old[2]
+    #             print("CHECKDIFF", check_difference)
+
+    #         if grid.get(force_up)[0]:
+    #             if force_up != start:
+    #                 if force_up not in visited:
+    #                     path.append(force_up)
+    #                 # print(force_up)
+    #                     visited.add(force_up)
+    #         else:
+    #             # print("in")
+    #             test_bool = True
+    #             test_count = i
+    #             neighbour_list = neighbours(path[-1], grid, path)
+    #             if neighbour_list:
+    #                 for neighbour in neighbour_list:
+    #                     if grid.get(neighbour)[0]:
+    #                         if neighbour not in visited:
+    #                             if check_difference == 1:
+    #                                 print(test_count, i, "neighbour", neighbour)
+    #                                 test_old = neighbour
+    #                                 path.append(neighbour)
+    #                                 visited.add(neighbour)
+    #                         break
+    #             else:
+    #                 return False
+    #         # print(grid.get(force_up))
+    # if start == (15, 11, 0):
+    #     print(path)
+
+    f = grid.get(path[-1])[1] + heuristic(path[-1], end)
+
+    # input(path)
+    pq.put((f, path))
     while not pq.empty():
+        # print("path", path)
         path = pq.get()[1]
+        # input(path)
         current = path[-1]
         if current == end:
             return path
 
         for i in neighbours(current, grid, path):
+            # if i == (17, 11, 3):
+            #     print("path", path, "curr", current)
+            #     print("dict thingy", grid.get(i))
+            #     input(i)
             new_path = path + [i]
             # HEURISTIC
             g = len(new_path) + grid.get(i)[1]
