@@ -1,0 +1,2 @@
+# Data
+In de folder "data" staan alle bestanden die de nodige data bevatten om de algoritmes mee te testen. Alle data zijn opgeslagen in csv bestanden. In de data folder staan bestanden voor twee verschillende soorten data: bestanden voor netlists, die aangeven welke gates met elkaar verbonden moeten worden, en bestanden voor de coördinaten van de gates.
