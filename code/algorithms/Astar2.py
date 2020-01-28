@@ -56,6 +56,7 @@ def a_star(start, end, grid, ceiling_count):
     
     visited = set()
 
+# HEURISTIC
     # test_bool = False
     # test_count = 0
     # test_old = None
@@ -103,6 +104,7 @@ def a_star(start, end, grid, ceiling_count):
     #                         break
     #             else:
     #                 return False
+# .
 
     f = grid.get(path[-1])[1] + heuristic(path[-1], end)
 
@@ -118,6 +120,7 @@ def a_star(start, end, grid, ceiling_count):
         # Set the last node in the path to the current node
         current = path[-1]
 
+        # Check if the program finished succesfully
         if finished_check(current, end):
             return path
 
@@ -134,6 +137,7 @@ def a_star(start, end, grid, ceiling_count):
                 pq.put((f, new_path))
                 visited.add(i)
 
+    # Return false if the queue is empty and no solution has been found
     return False
 
 def a_star_basic(start, end, grid):
@@ -149,7 +153,8 @@ def a_star_basic(start, end, grid):
     while not pq.empty():
         path = pq.get()[1]
         current = path[-1]
-        if current == end:
+
+        if finished_check(current, end):
             return path
 
         for i in neighbours(current, grid, path):
@@ -173,7 +178,7 @@ def make_grid(gates):
         y_range = 17
 
     grid = {}
-    
+
     for x in range(18):
         for y in range(y_range):
             for z in range(8):
