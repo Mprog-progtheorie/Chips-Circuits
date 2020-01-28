@@ -9,6 +9,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def make_grid(layers, size):
+    """
+    Creates a 3 dimensional grid
+    """
     for i in range(layers): 
         GridX = np.linspace(0, size, (size + 1))
         GridY = np.linspace(0, size, (size + 1))
@@ -20,17 +23,22 @@ def make_grid(layers, size):
     ax.set_xlim3d(-1, size)
     ax.set_ylim3d(-1, size)
 
-# Enter coordinates as list with: [X, Y, Z]
-def draw_line(crdFrom, crdTo, colour):  
+def draw_line(crdFrom, crdTo, colour): 
+    """
+    Draws a line over the path
+    """ 
     Xline = [crdFrom[0], crdTo[0]]
     Yline = [crdFrom[1], crdTo[1]]
     Zline = [crdFrom[2], crdTo[2]]
 
-    # Draw line
+    # Draw the line
     print("LineFromTo",crdFrom , "To",crdTo, colour)
     ax.plot(Xline, Yline, Zline,lw=2,  color=colour, ms=12)
 
 def set_gate(crd):
+    """
+    Initializes gates
+    """
     PointX = [crd[0]]
     PointY = [crd[1]]
     PointZ = [crd[2]]
@@ -40,6 +48,9 @@ def set_gate(crd):
 
 
 class Vertex():
+    """
+    Vertex class which has neighbours and a status
+    """
     def __init__(self, name):
         self.name = name
         self.neighbours = []
@@ -52,10 +63,16 @@ class Vertex():
             self.neighbours.sort()
 
 class Graph():
+    """
+    Graph classs which has vertices, edges, a path, and a search method.
+    """
     def __init__(self):
         self.vertices = {}
 
     def add_vertex(self, v):
+        """
+        Add a vertex based on conditions
+        """
         if isinstance(v, Vertex) and v.name not in self.vertices:
             self.vertices[v.name] = v
             return True
@@ -63,6 +80,9 @@ class Graph():
             return False
     
     def add_edge(self, i, j):
+        """
+        Add edges for a vertex
+        """
         if str(i) in self.vertices and str(j) in self.vertices:
             for key, value in self.vertices.items():
                 if key == i:
@@ -74,6 +94,9 @@ class Graph():
             return False
     
     def path(self, goal):
+        """
+        Creates a path after the BFS algorithm has run.
+        """
         dist = self.vertices[goal].distance
         path = [goal]
         for i in self.vertices:
@@ -89,6 +112,9 @@ class Graph():
         return path
 
     def bfs(self, node):
+        """
+        Breadth first search algorithm using vertex objects
+        """
         queue = list()
         node.distance = 0
         node.status = "visited"

@@ -98,8 +98,6 @@ if __name__ == '__main__':
     
     count = 1
 
-    ceiling_counter = 2
-
     results = {}
     while count == 1:
         count = 0
@@ -133,13 +131,7 @@ if __name__ == '__main__':
             grid[tuple(coordinate_end)][0] = True
             
             # Call the A star algorithm
-            search = Astar.a_star(tuple(coordinate_begin), tuple(coordinate_end), grid, ceiling_counter)
-            ceiling_counter += 1
-
-            # Let wires go to different layers instead of the highest layer possible
-            if ceiling_counter == 8:
-                ceiling_counter = 2
-            # print("SEARCH: ",search, connected_gate) 
+            search = Astar.a_star(tuple(coordinate_begin), tuple(coordinate_end), grid)
             
             try:
                 for crd in search:
@@ -147,7 +139,6 @@ if __name__ == '__main__':
                 gate_connections.update({connected_gate: search})
             except:
                 blocking_wires.append((connected_gate, manhatten_length))
-                # break
 
         
            

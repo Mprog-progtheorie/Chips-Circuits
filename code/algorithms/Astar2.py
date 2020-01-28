@@ -57,7 +57,7 @@ def finished_check(current, end):
         return True
     return False
 
-def a_star(start, end, grid, ceiling_count):
+def a_star(start, end, grid):
     """
     A star search function: It takes a start node, end node, grid, and a ceiling_count
     """
@@ -69,56 +69,6 @@ def a_star(start, end, grid, ceiling_count):
     path = [start]
     
     visited = set()
-
-# HEURISTIC
-    # test_bool = False
-    # test_count = 0
-    # test_old = None
-
-    # check_difference = 0
-
-    # HEURISTIC
-    # if heuristic(start, end) > 5:
-    #     for i in range(ceiling_count):
-    #         force_up = list(path[-1])
-    #         # print("1", force_up)
-
-    #         if test_bool:
-    #             force_up[2] = test_count
-    #             test_bool = False
-    #         else:
-    #             test_count += 1
-    #             force_up[2] = test_count
-    #         force_up = tuple(force_up)
-    #         if test_old != None:
-    #             print("old", test_old, force_up)
-    #             check_difference = force_up[2] - test_old[2]
-    #             print("CHECKDIFF", check_difference)
-
-    #         if grid.get(force_up)[0]:
-    #             if force_up != start:
-    #                 if force_up not in visited:
-    #                     path.append(force_up)
-    #                 # print(force_up)
-    #                     visited.add(force_up)
-    #         else:
-    #             # print("in")
-    #             test_bool = True
-    #             test_count = i
-    #             neighbour_list = neighbours(path[-1], grid, path)
-    #             if neighbour_list:
-    #                 for neighbour in neighbour_list:
-    #                     if grid.get(neighbour)[0]:
-    #                         if neighbour not in visited:
-    #                             if check_difference == 1:
-    #                                 print(test_count, i, "neighbour", neighbour)
-    #                                 test_old = neighbour
-    #                                 path.append(neighbour)
-    #                                 visited.add(neighbour)
-    #                         break
-    #             else:
-    #                 return False
-# .
 
     f = grid.get(path[-1])[1] + heuristic(path[-1], end)
 
