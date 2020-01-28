@@ -8,6 +8,8 @@ import csv
 import random
 import sys
 
+
+
 def main():
     """
     Greet the user with a CLI
@@ -30,24 +32,11 @@ def main():
 
     return net_option, number_of_solutions, hill_climb_bool
 
-if __name__ == '__main__':
-    net_option, number_of_solutions, hill_climb_bool = main()
-    start_time = time.time()
+def generate_distances(netlist, gate_coordinates):
+    """
+    Make a dictionary of all gates with the calculated distances between them.
+    """
 
-    if int(net_option) <= 3:
-        netliststring = "data/" + "netlist_" + net_option + ".csv"
-        printstring = "data/" + "print_1" + ".csv"
-    elif int(net_option) <= 6:
-        netliststring = "data/" + "netlist_" + net_option + ".csv"
-        printstring = "data/" + "print_2" + ".csv"
-   
-    # Create netlist by loading file in class
-    netlist = classs.Netlist(netliststring).netlist
-
-    # Create list for gate coordinates
-    gate_coordinates = classs.Gate_coordinate(printstring).gate_coordinates
-
-    
     distances = {}
 
     for item in netlist:
@@ -70,6 +59,27 @@ if __name__ == '__main__':
         total_dist = abs(x_coordinate_1 - x_coordinate_2) + abs(y_coordinate_1 - y_coordinate_2)
 
         distances.update({connected_gate: total_dist})
+
+    return distances
+
+if __name__ == '__main__':
+    net_option, number_of_solutions, hill_climb_bool = main()
+    start_time = time.time()
+
+    if int(net_option) <= 3:
+        netliststring = "data/" + "netlist_" + net_option + ".csv"
+        printstring = "data/" + "print_1" + ".csv"
+    elif int(net_option) <= 6:
+        netliststring = "data/" + "netlist_" + net_option + ".csv"
+        printstring = "data/" + "print_2" + ".csv"
+   
+    # Create netlist by loading file in class
+    netlist = classs.Netlist(netliststring).netlist
+
+    # Create list for gate coordinates
+    gate_coordinates = classs.Gate_coordinate(printstring).gate_coordinates
+
+    distances = generate_distances(netlist, gate_coordinates)
 
     # Sort connections from smallest to largest distance in dictionary
     print(distances.items())
@@ -95,9 +105,6 @@ if __name__ == '__main__':
         count = 0
 
         gate_connections = {}
-
-        
-        # string_gates = [] 
         
         grid = Astar.make_grid(gate_coordinates)
         temp_path = list()
@@ -125,9 +132,11 @@ if __name__ == '__main__':
             grid[tuple(coordinate_begin)][0] = True
             grid[tuple(coordinate_end)][0] = True
             
+            # Call the A star algorithm
             search = Astar.a_star(tuple(coordinate_begin), tuple(coordinate_end), grid, ceiling_counter)
             ceiling_counter += 1
 
+            # Let wires go to different layers instead of the highest layer possible
             if ceiling_counter == 8:
                 ceiling_counter = 2
             # print("SEARCH: ",search, connected_gate) 
