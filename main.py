@@ -163,8 +163,7 @@ if __name__ == '__main__':
                 original_wirelength = len(wire)
                 for crd in wire:
                     grid[crd][0] = True
-                # print(gate_connection[0], gate_connection[1])
-                # print(tuple(gate_coordinates[(gate_connection[0] - 1)]), tuple(gate_coordinates[(gate_connection[1] - 1)]))
+               
                 newpath = Astar.a_star_basic(tuple(gate_coordinates[(gate_connection[0] - 1)]), tuple(gate_coordinates[(gate_connection[1] - 1)]), grid)
                 if newpath:
                     print(len(wire), len(newpath))
@@ -180,9 +179,6 @@ if __name__ == '__main__':
             for new_wire in new_wires_list:
                 del gate_connections[new_wire[0]]
                 gate_connections.update({new_wire[0] : new_wire[1]})
-
-
-
 
     gate_connections = results[max(results, key=int)][1]
     ax = plot.make_grid(8, 17)
@@ -209,7 +205,6 @@ if __name__ == '__main__':
     colourcounter = 0
     for keys in gate_connections:
         allConnections = gate_connections[keys]
-        # print(len(allConnections))
         allconnectionlist = []
         for listconnection in allConnections: 
             allconnectionlist.append(listconnection)
@@ -227,7 +222,7 @@ if __name__ == '__main__':
 
     plt.show()
     
-    with open('Astar_output.csv', mode= 'w') as outputfile:
+    with open('output/Astar_output.csv', mode= 'w') as outputfile:
         output_writer = csv.writer(outputfile, delimiter= ',')
 
         for keys in gate_connections:
