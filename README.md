@@ -15,7 +15,7 @@ pip3 install -r requirements.txt
 ```
 
 ### Structuur
-De repository bestaat uit drie belangrijke folders: code, data en linespacer.
+De repository bestaat uit vier belangrijke folders: code, data, linespacer en output.
 
 #### code
 In de folder "code" staat alle belangrijke code opgeslagen. Deze folder bestaat ook weer uit vier belangrijke folders: algorithms, classes, functions en visualisation.
@@ -30,6 +30,9 @@ In de folder "data" staan alle bestanden die de nodige data bevatten om de algor
 
 #### linespacer
 "Linespacer" is een algoritme dat Izhar, Tom en Julia zelf hebben geschreven. In de folder "linespacer" staan de codes voor dit algoritme samen met de output die bij het runnen van het algoritme wordt gevormd.
+
+#### output
+In de folder "output" worden CSV bestanden gevormd nadat een algoritme is laten runnen. Deze CSV files bevatten de output per algoritme.
 
 ### Test
 Er zijn twee algoritmes die goed zijn uitgewerkt voor dit optimalisatieprobleem: A-star en Linespacer. A-star kan gerund worden vanuit de huidige directory. Om het A-star algoritme te laten runnen moet de main.py file worden aangeroepen op de volgende manier:

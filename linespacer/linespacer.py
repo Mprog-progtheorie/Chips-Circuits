@@ -590,7 +590,7 @@ for keys in gate_connections:
             break
 
 # Create output file with coordinates of wires between gates and connected gates           
-with open('output.csv', mode= 'w') as outputfile:
+with open('../output/output_linespacer.csv', mode= 'w') as outputfile:
     output_writer = csv.writer(outputfile, delimiter= ',')
 
     for keys in gate_connections:
