@@ -1,0 +1,4 @@
+# Algorithms
+In deze folder staan de bestanden die nodig zijn om het random algoritme, breadth first search algoritme en het A-star algoritme te laten runnen. Het enige algoritme in deze folder wat goed is uitgewerkt voor het optimalisatieprobleem is het A-star algoritme.
+
+Als het script klaar is met runnen, wordt er in de head directory (waar de locatie van main.py ook is) een CSV-file gevormd met de output. Ook wordt er een visualisatie getoond van de chip bestaande uit gates die verbonden zijn door middel van wires. De wires hebben verschillende kleuren en verbinden 2 gates met elkaar.
