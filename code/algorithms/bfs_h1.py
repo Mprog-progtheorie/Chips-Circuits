@@ -14,9 +14,8 @@ def make_grid(layers, size):
         GridY = np.linspace(0, size, (size + 1))
         X, Y = np.meshgrid(GridX, GridY)
         Z = (np.sin(np.sqrt(X ** 2 + Y ** 2)) * 0) + i
-        # Plot grid
-        # ax.plot_wireframe(X, Y, Z, lw=0.5,  color='grey')
-    #configure axes
+
+    # configure axes
     ax.set_zlim3d(0, layers)
     ax.set_xlim3d(-1, size)
     ax.set_ylim3d(-1, size)
@@ -26,6 +25,7 @@ def draw_line(crdFrom, crdTo, colour):
     Xline = [crdFrom[0], crdTo[0]]
     Yline = [crdFrom[1], crdTo[1]]
     Zline = [crdFrom[2], crdTo[2]]
+
     # Draw line
     print("LineFromTo",crdFrom , "To",crdTo, colour)
     ax.plot(Xline, Yline, Zline,lw=2,  color=colour, ms=12)
@@ -34,6 +34,7 @@ def set_gate(crd):
     PointX = [crd[0]]
     PointY = [crd[1]]
     PointZ = [crd[2]]
+
     # Plot points
     ax.plot(PointX, PointY, PointZ, ls="None", marker="o", color='red')
 
@@ -54,7 +55,6 @@ class Graph():
     def __init__(self):
         self.vertices = {}
 
-
     def add_vertex(self, v):
         if isinstance(v, Vertex) and v.name not in self.vertices:
             self.vertices[v.name] = v
@@ -72,19 +72,13 @@ class Graph():
             return True
         else:
             return False
-
-    def print_graph(self):
-        for key in sorted(list(self.vertices.keys())):
-            print(key + str(self.vertices[key].neighbours) + " " + str(self.vertices[key].distance))
     
     def path(self, goal):
         dist = self.vertices[goal].distance
         path = [goal]
         for i in self.vertices:
             for j in self.vertices[goal].neighbours:
-                # Nog een random heuristiek
                 if self.vertices[j].distance == dist - 1:
-                    # print(self.vertices[j])
                     for k in self.vertices.items():
                         if self.vertices[j] == k[1]:
                             goal = str(k[0])
@@ -102,7 +96,6 @@ class Graph():
             self.vertices[i].distance = node.distance + 1
             queue.append(i)
         while len(queue) > 0:
-            # print(len(queue))
             node1 = self.vertices[queue.pop(0)]
             node1.status = "visited"
 
@@ -115,14 +108,12 @@ class Graph():
 
 
 # Open file with netlist
-data = open("../data/netlist_1.csv")
-
-# data = open("../data/example_net3.csv")
+data = open("../../data/example_net2.csv")
 
 reader = csv.reader(data)
 
 # Create netlist
-netlist = []
+netlist = list()
 
 for net_1, net_2 in reader:
     net = (net_1, net_2)
@@ -130,17 +121,15 @@ for net_1, net_2 in reader:
 
 # Open file with gates
 
-gates = open("../data/pritn_1.csv")
-
-# gates = open("../data/example_prit3.csv")
+gates = open("../../data/example_prit2.csv")
 
 reader = csv.reader(gates)
 
 # Create list for gate coordinates
-gate_coordinates = []
+gate_coordinates = list()
 
 # Create list of coordinates that are not traversable
-gates = []
+gates = list()
 
 
 
@@ -156,8 +145,6 @@ for number, x, y in reader:
         y = int(y)
         coordinates = [x, y, 0]
         gate_coordinates.append("(" + str(coordinates).strip("[]") + ")")
-
-        # What to do? deepcopy? normal copy?
         gates.append(coordinates)
 
 
@@ -169,8 +156,6 @@ print("gate crds: ", gate_coordinates)
 
 # Increase z value if no solution can be found
 zCounter = 1
-# gridSize = 6
-
 
 allWires = {}
 
@@ -179,9 +164,9 @@ allWires = {}
 def convert(list): 
     return (*list, ) 
 
-wire = [] 
+wire = list() 
 
-blocked = []
+blocked = list()
 
 # For allWires keys
 tempCount = 0
@@ -195,10 +180,9 @@ for net in netlist:
     while notPossible:
         
         # Make grid with bigger z if no solution possible to prune possibilities
-        grid1 = []
+        grid1 = list()
         
-        # Make sure the amount of layers doesn't exceed 8
-
+        # Make sure the amount of layers doesn't exceed max
         if zCounter < 9:
             for x in range(-1, 17):
                 for y in range(-1, 12):
@@ -208,10 +192,7 @@ for net in netlist:
             print("No solution can be found")
 
         
-        start = str(gate_coordinates[int(net[0]) - 1])
-
-        # niet meer nodig als ik het in het begin doe?
-        # start = "(" + start.strip("[]") + ")"
+        start = str(gate_coordinates[int(net[0])])
         
         g = Graph()
 
@@ -241,38 +222,15 @@ for net in netlist:
                 elif abs(j[2] - i[2]) == 1 and j[0] - i[0] == 0 and j[1] - i[1] == 0:
                     if (j,i) not in edges:
                         edges.append((i,j))
-        # print(edges)
-        # for i in range(len(edges)):
-        #     if (0, 3, 0) == edges[i][0] or (0, 3, 0) == edges[i][1]:
-        #         edges.pop(i)
-            # print(edges[i])
-        
-        
 
         end = str(gate_coordinates[int(net[1]) - 1])
         
         for i in gate_coordinates: 
             i = eval(i) 
             for j in edges:
-                # if eval(i) in j:
-                #     edges.remove(j)
                 if i in j:
                     if i != eval(start) and i != eval(end):
                         edges.remove(j)
-                    # for k in allWires:
-                    #     for l in allWires[k]:
-                    #         # print(allWires)
-                    #         l = convert(l)
-                    #         if l in j:
-                    #             if j in edges:
-                    #                 print("true", j)
-                                    # edges.remove(j)
-                    # else:
-                    #     for k in allWires.items():
-                            # print("!!!!!!: : :", k)
-
-
-
                 else:
                     for k in blocked:
                         if k in j:
@@ -280,7 +238,6 @@ for net in netlist:
                                 edges.remove(j)
                             except:
                                 pass
-
 
         for i in edges:
             g.add_edge(str(i[0]), str(i[1]))
@@ -290,11 +247,9 @@ for net in netlist:
         print(g.path(end))
 
         if len(g.path(end)) == 1:
-            print("true")
             zCounter += 1
             notPossible = True
         else:
-            print("false")
             notPossible = False
         
         for i in g.path(end):
@@ -314,8 +269,7 @@ for gate_coordinate in gates:
 
 
 colours = ['b','lightgreen','cyan','m','yellow','k', 'pink']
-colourcounter = 0 
-# for i in range(len(allWires)):  
+colourcounter = 0   
 
 
 for keys in allWires:
@@ -329,7 +283,6 @@ for keys in allWires:
         colourcounter = 0
     for i in range(len(allconnectionlist)):
         try:
-            # print("LineFromTo", allWires[i], "To",allWires[i + 1] )
             draw_line(allconnectionlist[i], allconnectionlist[i+1], colours[colourcounter] )
             plt.pause(0.05)
         except: 
@@ -341,9 +294,6 @@ ax.set_zlabel('z')
 
 plt.show()
 
-   
-# g.print_graph()
-# print(edges)
 print(len(edges))
 
 print(len(allWires))
