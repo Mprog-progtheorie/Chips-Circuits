@@ -483,6 +483,9 @@ for chips in distances:
                         allwires.remove(delete_wire)
                     break
                     
+    # Print update about number of connected gates
+    print("Currently", len(gate_connections), "wires out of", len(netlist), "wires.")
+    
     # Let script stop if running in forever loop
     if len(distances) > 5*len(netlist):
         # Delete wires that are not within the grid
