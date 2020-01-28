@@ -4,7 +4,7 @@ linespacer_withzconstraints.py
 Tom Kamstra, Izhar Hamer, Julia Linde
 
 Finds the optimal paths between the chips.
-Code is not working, but constraints with z-coordinate are implemented.
+Code is not working well, but constraints with z-coordinate are implemented.
 """
 from mpl_toolkits import mplot3d
 import numpy as np
@@ -14,7 +14,6 @@ sys.path.append("../code")
 from classes import classes as classs
 from functions import delete as delete
 from functions import change_coordinates as change
-import copy
 import csv
 
 # Create netlist by loading file in class
@@ -86,6 +85,10 @@ deleting_length = 75
 
 # Define number for maximum length of wire
 max_wirelength = 100
+
+# Define step_x and step_y as 0 from the beginning
+step_x = 0
+step_y = 0
 
 # Connect gates with eachother, starting with smallest distance
 for chips in distances:
@@ -264,10 +267,6 @@ for chips in distances:
            coordinate = [x_coordinate_start, y_coordinate_start, z_coordinate_start]
            # Check for other gates or other wires
            if gate_connections:
-               try:
-                   step_x = step_x
-               except:
-                   step_x = 0
                if z_coordinate_start > 0:
                    y_coordinate_start = y_coordinate_start - step_y
                    z_coordinate_start = z_coordinate_start - 1
@@ -349,65 +348,15 @@ for chips in distances:
             # Delete one wire around end gate or delete one wire that is too long
             # Check every wire around end gate by redefining check_coordinate
             x_coordinate_check = x_coordinate_end + step_x
-            check_coordinate = [x_coordinate_check, y_coordinate_end, z_coordinate_end]
-            for item in allwires:
-                if item.coordinate == check_coordinate and item.net[0] != gate_end and item.net[1] != gate_end:
-                    (wires, x_coordinate_start, y_coordinate_start, z_coordinate_start, coordinate, gate_connections, allwires) = delete.delete_wire(wires, coordinate_begin, item.net, distances, gate_connections, allwires)
-                    break
-                else:
-                    copy_gate_connections = copy.deepcopy(gate_connections)
-                    for key in copy_gate_connections:
-                        if len(copy_gate_connections[key]) > deleting_length:
-                            (wires, x_coordinate_start, y_coordinate_start, z_coordinate_start, coordinate, gate_connections, allwires) = delete.delete_wire(wires, coordinate_begin, item.net, distances, gate_connections, allwires)
-                break            
+            (allwires, wires, gate_connections) = delete.delete_wires_maxlength(x_coordinate_check, y_coordinate_end, z_coordinate_end, allwires, gate_end, wires, coordinate_begin, distances, gate_connections, deleting_length)          
             x_coordinate_check = x_coordinate_end - step_x
-            check_coordinate = [x_coordinate_check, y_coordinate_end, z_coordinate_end]
-            for item in allwires:
-                if item.coordinate == check_coordinate and item.net[0] != gate_end and item.net[1] != gate_end:
-                    (wires, x_coordinate_start, y_coordinate_start, z_coordinate_start, coordinate, gate_connections, allwires) = delete.delete_wire(wires, coordinate_begin, item.net, distances, gate_connections, allwires)
-                    break
-                else:
-                    copy_gate_connections = copy.deepcopy(gate_connections)
-                    for key in copy_gate_connections:
-                        if len(copy_gate_connections[key]) > deleting_length:
-                            (wires, x_coordinate_start, y_coordinate_start, z_coordinate_start, coordinate, gate_connections, allwires) = delete.delete_wire(wires, coordinate_begin, item.net, distances, gate_connections, allwires)
-                break
+            (allwires, wires, gate_connections) = delete.delete_wires_maxlength(x_coordinate_check, y_coordinate_end, z_coordinate_end, allwires, gate_end, wires, coordinate_begin, distances, gate_connections, deleting_length)
             y_coordinate_check = y_coordinate_end + step_y
-            check_coordinate = [x_coordinate_end, y_coordinate_check, z_coordinate_end]
-            for item in allwires:
-                if item.coordinate == check_coordinate and item.net[0] != gate_end and item.net[1] != gate_end:
-                    (wires, x_coordinate_start, y_coordinate_start, z_coordinate_start, coordinate, gate_connections, allwires) = delete.delete_wire(wires, coordinate_begin, item.net, distances, gate_connections, allwires)
-                    break
-                else:
-                    copy_gate_connections = copy.deepcopy(gate_connections)
-                    for key in copy_gate_connections:
-                        if len(copy_gate_connections[key]) > deleting_length:
-                            (wires, x_coordinate_start, y_coordinate_start, z_coordinate_start, coordinate, gate_connections, allwires) = delete.delete_wire(wires, coordinate_begin, item.net, distances, gate_connections, allwires)
-                break
+            (allwires, wires, gate_connections) = delete.delete_wires_maxlength(x_coordinate_end, y_coordinate_check, z_coordinate_end, allwires, gate_end, wires, coordinate_begin, distances, gate_connections, deleting_length)
             y_coordinate_check = y_coordinate_end - step_y
-            check_coordinate = [x_coordinate_end, y_coordinate_check, z_coordinate_end]
-            for item in allwires:
-                if item.coordinate == check_coordinate and item.net[0] != gate_end and item.net[1] != gate_end:
-                    (wires, x_coordinate_start, y_coordinate_start, z_coordinate_start, coordinate, gate_connections, allwires) = delete.delete_wire(wires, coordinate_begin, item.net, distances, gate_connections, allwires)
-                    break
-                else:
-                    copy_gate_connections = copy.deepcopy(gate_connections)
-                    for key in copy_gate_connections:
-                        if len(copy_gate_connections[key]) > deleting_length:
-                            (wires, x_coordinate_start, y_coordinate_start, z_coordinate_start, coordinate, gate_connections, allwires) = delete.delete_wire(wires, coordinate_begin, key, distances, gate_connections, allwires)
-                break
+            (allwires, wires, gate_connections) = delete.delete_wires_maxlength(x_coordinate_end, y_coordinate_check, z_coordinate_end, allwires, gate_end, wires, coordinate_begin, distances, gate_connections, deleting_length)
             z_coordinate_check = z_coordinate_end + 1
-            check_coordinate = [x_coordinate_end, y_coordinate_end, z_coordinate_check]
-            for item in allwires:
-                if item.coordinate == check_coordinate and item.net[0] != gate_end and item.net[1] != gate_end:
-                    (wires, x_coordinate_start, y_coordinate_start, z_coordinate_start, coordinate, gate_connections, allwires) = delete.delete_wire(wires, coordinate_begin, item.net, distances, gate_connections, allwires)
-                    break
-                else:
-                    copy_gate_connections = copy.deepcopy(gate_connections)
-                    for key in copy_gate_connections:
-                        if len(copy_gate_connections[key]) > deleting_length:
-                            (wires, x_coordinate_start, y_coordinate_start, z_coordinate_start, coordinate, gate_connections, allwires) = delete.delete_wire(wires, coordinate_begin, key, distances, gate_connections, allwires)
-                break
+            (allwires, wires, gate_connections) = delete.delete_wires_maxlength(x_coordinate_end, y_coordinate_end, z_coordinate_check, allwires, gate_end, wires, coordinate_begin, distances, gate_connections, deleting_length)
                     
             # If no wire can be deleted and current wire can still not reach end gate
             wires = []
@@ -419,7 +368,8 @@ for chips in distances:
             switch_variable = 1
         else: 
             connection_checker += 1
-        if connection_checker > 200:
+        # Break if wire is created too often and will probably never connect
+        if connection_checker > 2*max_wirelength:
             break      
     
     # New connection is created           
@@ -451,7 +401,7 @@ for chips in distances:
     net.create_wires(wires)
     gate_connections.update({connected_gate: wires})
     
-    if len(gate_connections) == len(netlist) - minus_num_wires:
+    if len(gate_connections) >= len(netlist) - minus_num_wires:
         # Check whether every wire reaches end gate
         for net in netlist:
             start_gate = int(net.gate_1)
@@ -473,8 +423,20 @@ for chips in distances:
             # Delete wire if wire doesn't reach end gate
             if select_conn != "Key already deleted" and end_coordinate not in select_conn:
                 del gate_connections[gate_net]
-            
-                distances.append((new_net, 2))
+                
+                # Calculate total shortest distance between gates for appending to distances
+                coor_start = gate_coordinates[start_gate - 1]
+                coor_end = gate_coordinates[end_gate - 1]
+    
+                x_coordinate_start = int(coor_start[0])
+                y_coordinate_start = int(coor_start[1])
+
+                x_coordinate_end = int(coor_end[0])
+                y_coordinate_end = int(coor_end[1])
+
+                total_dist = abs(x_coordinate_start - x_coordinate_end) + abs(y_coordinate_start - y_coordinate_end)
+                
+                distances.append((new_net, total_dist))
             
                 # Repeat this 4 times
                 for repeat in range(4):
@@ -485,10 +447,22 @@ for chips in distances:
                         if wire_length > longest_wire_length:
                             longest_wire_length = wire_length
                             delete_gate = connection
-        
+                    
+                    # Calculate total shortest distance between gates for appending to distances
+                    coor_start = gate_coordinates[delete_gate[0] - 1]
+                    coor_end = gate_coordinates[delete_gate[1] - 1]
+    
+                    x_coordinate_start = int(coor_start[0])
+                    y_coordinate_start = int(coor_start[1])
+
+                    x_coordinate_end = int(coor_end[0])
+                    y_coordinate_end = int(coor_end[1])
+
+                    total_dist = abs(x_coordinate_start - x_coordinate_end) + abs(y_coordinate_start - y_coordinate_end)
+                    
                     # Append deleted wire to distances in switched order
                     new_wire = (delete_gate[1], delete_gate[0])
-                    distances.append((new_wire, 2))
+                    distances.append((new_wire, total_dist))
         
                     del gate_connections[delete_gate]
 
@@ -518,9 +492,21 @@ for chips in distances:
                     # Delete wire from gate_connections dictionary
                     del gate_connections[gatenet]
                     
+                    # Calculate total shortest distance between gates for appending to distances
+                    coor_start = gate_coordinates[gatenet[0] - 1]
+                    coor_end = gate_coordinates[gatenet[1] - 1]
+    
+                    x_coordinate_start = int(coor_start[0])
+                    y_coordinate_start = int(coor_start[1])
+
+                    x_coordinate_end = int(coor_end[0])
+                    y_coordinate_end = int(coor_end[1])
+
+                    total_dist = abs(x_coordinate_start - x_coordinate_end) + abs(y_coordinate_start - y_coordinate_end)
+                    
                     # Append deleted wire to distances in switched order
                     wire_new = (gatenet[1], gatenet[0])
-                    distances.append((wire_new, 2))
+                    distances.append((wire_new, total_dist))
                     
                     deletewire = []
                     # Delete wire from allwires list

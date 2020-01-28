@@ -1,5 +1,5 @@
 """
-functions.py
+change_coordinates.py
 
 Tom Kamstra, Izhar Hamer, Julia Linde
 

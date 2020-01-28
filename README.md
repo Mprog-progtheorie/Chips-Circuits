@@ -32,7 +32,10 @@ In de folder "data" staan alle bestanden die de nodige data bevatten om de algor
 "Linespacer" is een algoritme dat Izhar, Tom en Julia zelf hebben geschreven. In de folder "linespacer" staan de codes voor dit algoritme samen met de output die bij het runnen van het algoritme wordt gevormd.
 
 ### Test
-Er zijn twee algoritmes die goed zijn uitgewerkt voor dit optimalisatieprobleem: A-start en Linespacer. Om A-star te kunnen runnen......
+Er zijn twee algoritmes die goed zijn uitgewerkt voor dit optimalisatieprobleem: A-star en Linespacer. A-star kan gerund worden vanuit de huidige directory. Om het A-star algoritme te laten runnen moet de main.py file worden aangeroepen op de volgende manier:
+```
+python main.py
+```
 
 Om Linespacer algoritmes te kunnen runnen, moet eerst de directory worden veranderd naar /linespacer. Vervolgens moet het specifieke linespacer algoritme worden aangeroepen in de terminal om dit algoritme te laten runnen. Om als voorbeeld de standaard linespacer te nemen, moet de volgende command line worden ingevoerd in de terminal:
 ```
